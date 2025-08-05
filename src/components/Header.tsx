@@ -1,16 +1,33 @@
 import { Button } from "@/components/ui/button";
 import pikpartLogo from "@/assets/pikpart-logo.png";
+import { useAuth } from "@/hooks/useAuth";
+import { Link, useNavigate } from "react-router-dom";
+import { LogOut, User } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 const Header = () => {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleAuthAction = () => {
+    if (user) {
+      signOut();
+    } else {
+      navigate("/login");
+    }
+  };
+
   return (
     <header className="bg-primary text-primary-foreground shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center space-x-2">
-            <img src={pikpartLogo} alt="PikPart Smart Garage" className="h-10 w-10" />
-            <div className="flex items-center space-x-4">
+            <Link to="/" className="flex items-center space-x-2">
+              <img src={pikpartLogo} alt="PikPart Smart Garage" className="h-10 w-10" />
               <span className="text-xl font-bold">PIKPART</span>
+            </Link>
+            <div className="flex items-center space-x-4">
               <div className="hidden md:flex space-x-6 ml-8">
                 <Button variant="ghost" className="text-primary-foreground hover:text-accent">
                   Car Service
@@ -24,24 +41,55 @@ const Header = () => {
 
           {/* Navigation */}
           <nav className="hidden lg:flex items-center space-x-6">
-            <Button variant="ghost" className="text-primary-foreground hover:text-accent">
-              Home
-            </Button>
-            <Button variant="ghost" className="text-primary-foreground hover:text-accent">
-              Services
-            </Button>
-            <Button variant="ghost" className="text-primary-foreground hover:text-accent">
-              Blogs
-            </Button>
-            <Button variant="ghost" className="text-primary-foreground hover:text-accent">
-              Cart
-            </Button>
-            <Button variant="ghost" className="text-primary-foreground hover:text-accent">
-              Booking
-            </Button>
-            <Button variant="orange" size="sm">
-              LOG IN
-            </Button>
+            <Link to="/">
+              <Button variant="ghost" className="text-primary-foreground hover:text-accent">
+                Home
+              </Button>
+            </Link>
+            <Link to="/services">
+              <Button variant="ghost" className="text-primary-foreground hover:text-accent">
+                Services
+              </Button>
+            </Link>
+            <Link to="/blogs">
+              <Button variant="ghost" className="text-primary-foreground hover:text-accent">
+                Blogs
+              </Button>
+            </Link>
+            <Link to="/cart">
+              <Button variant="ghost" className="text-primary-foreground hover:text-accent">
+                Cart
+              </Button>
+            </Link>
+            <Link to="/booking">
+              <Button variant="ghost" className="text-primary-foreground hover:text-accent">
+                Booking
+              </Button>
+            </Link>
+            
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="text-primary-foreground">
+                    <User className="h-4 w-4 mr-2" />
+                    {user.email}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={() => navigate("/profile")}>
+                    Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={signOut}>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Log Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button variant="orange" size="sm" onClick={handleAuthAction}>
+                LOG IN
+              </Button>
+            )}
           </nav>
 
           {/* Mobile Menu Button */}
