@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
-import Hero from "@/components/Hero";
-import Services from "@/components/Services";
-import ProductCategory from "@/components/ProductCategory";
+import DynamicHero from "@/components/DynamicHero";
+import DynamicServices from "@/components/DynamicServices";
+import DynamicProductCategory from "@/components/DynamicProductCategory";
 import HowWeWork from "@/components/HowWeWork";
 import Testimonials from "@/components/Testimonials";
 import AppDownload from "@/components/AppDownload";
@@ -13,9 +13,9 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <Hero />
-      <Services />
-      <ProductCategory />
+      <DynamicHero />
+      <DynamicServices />
+      <DynamicProductCategory />
       <HowWeWork />
       <Testimonials />
       <AppDownload />

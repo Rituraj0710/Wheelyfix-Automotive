@@ -1,12 +1,14 @@
 import { Button } from "@/components/ui/button";
 import pikpartLogo from "@/assets/pikpart-logo.png";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserRole } from "@/hooks/useUserRole";
 import { Link, useNavigate } from "react-router-dom";
 import { LogOut, User } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 const Header = () => {
   const { user, signOut } = useAuth();
+  const { isAdmin } = useUserRole();
   const navigate = useNavigate();
 
   const handleAuthAction = () => {
@@ -66,6 +68,13 @@ const Header = () => {
                 Booking
               </Button>
             </Link>
+            {isAdmin && (
+              <Link to="/admin">
+                <Button variant="ghost" className="text-primary-foreground hover:text-accent">
+                  Admin
+                </Button>
+              </Link>
+            )}
             
             {user ? (
               <DropdownMenu>
@@ -79,6 +88,11 @@ const Header = () => {
                   <DropdownMenuItem onClick={() => navigate("/profile")}>
                     Profile
                   </DropdownMenuItem>
+                  {isAdmin && (
+                    <DropdownMenuItem onClick={() => navigate("/admin")}>
+                      Admin Panel
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem onClick={signOut}>
                     <LogOut className="h-4 w-4 mr-2" />
                     Log Out
