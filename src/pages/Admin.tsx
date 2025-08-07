@@ -50,7 +50,7 @@ const Admin = () => {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-            <p className="text-muted-foreground">Manage your PikPart Smart Garage website</p>
+            <p className="text-muted-foreground">Manage your Wheelyfix Automotive website</p>
           </div>
           <Badge variant="secondary" className="flex items-center gap-2">
             <Shield className="h-4 w-4" />

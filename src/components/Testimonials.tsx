@@ -6,23 +6,23 @@ const Testimonials = () => {
   const testimonials = [
     {
       name: "Jahnvi Kanth",
-      review: "PIKPART did a great job servicing my Honda Activa, which involved replacing most of the damaged parts. Really friendly service, I would highly recommend"
+      review: "WHEELYFIX did a great job servicing my Honda Activa, which involved replacing most of the damaged parts. Really friendly service, I would highly recommend"
     },
     {
       name: "Rohan Kataria", 
-      review: "I had the BEST experience with PIKPART: great & professional bike service, super fast and friendly communication, price value is unbeatable. I'll definitely will bring my bike there again and I can only recommend PIKPART to 100%"
+      review: "I had the BEST experience with WHEELYFIX: great & professional bike service, super fast and friendly communication, price value is unbeatable. I'll definitely will bring my bike there again and I can only recommend WHEELYFIX to 100%"
     },
     {
       name: "Sarita Dua",
-      review: "Outstanding quality of work at a great price, cost free pick up and drop off with the addition of professional finish, what more to ask for. Definetly recommend PIKPART regardless if small or big problem"
+      review: "Outstanding quality of work at a great price, cost free pick up and drop off with the addition of professional finish, what more to ask for. Definetly recommend WHEELYFIX regardless if small or big problem"
     },
     {
       name: "Ravindra Pratap",
-      review: "Superb service! Bike collected, serviced & repaired to the highest standards and returned in pristine condition. Will definitely use PIKPART again. Highly recommended"
+      review: "Superb service! Bike collected, serviced & repaired to the highest standards and returned in pristine condition. Will definitely use WHEELYFIX again. Highly recommended"
     },
     {
       name: "Mayank Awasthi", 
-      review: "In all terrains and situations I can blindly trust my motorcycle, because it is serviced by Pikpart Services. The brand who feels motorcycles."
+      review: "In all terrains and situations I can blindly trust my motorcycle, because it is serviced by Wheelyfix Services. The brand who feels motorcycles."
     },
     {
       name: "Sweta Goel",

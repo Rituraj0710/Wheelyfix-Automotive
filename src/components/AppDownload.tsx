@@ -20,7 +20,7 @@ const AppDownload = () => {
               </div>
               
               <h2 className="text-4xl lg:text-5xl font-bold mb-6 leading-tight">
-                SMART GARAGE APP
+                Wheelyfix Automotive APP
               </h2>
               
               <p className="text-xl text-gray-300 leading-relaxed">

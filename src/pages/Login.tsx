@@ -20,7 +20,7 @@ const Login = () => {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-primary">Welcome to PikPart</CardTitle>
+          <CardTitle className="text-2xl font-bold text-primary">Welcome to Wheelyfix</CardTitle>
           <p className="text-muted-foreground">Smart Garage Solutions</p>
         </CardHeader>
         <CardContent>

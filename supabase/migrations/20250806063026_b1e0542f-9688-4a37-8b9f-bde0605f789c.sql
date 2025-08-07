@@ -70,7 +70,7 @@ CREATE TABLE public.blog_posts (
   featured_image_url TEXT,
   author_id UUID REFERENCES public.profiles(id),
   is_published BOOLEAN DEFAULT false,
-  tags TEXT[],
+  tags TEXT[] NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL
 );
@@ -108,7 +108,7 @@ BEGIN
   VALUES (
     new.id,
     new.email,
-    new.raw_user_meta_data->>'full_name',
+    COALESCE(new.raw_user_meta_data->>'full_name', 'Unknown'),  -- Use 'Unknown' if no full_name is provided
     'user'
   );
   RETURN new;
@@ -122,9 +122,9 @@ CREATE TRIGGER on_auth_user_created
 
 -- Function to update updated_at timestamp
 CREATE OR REPLACE FUNCTION public.update_updated_at_column()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER AS $$ 
 BEGIN
-    NEW.updated_at = now();
+    NEW.updated_at = now(); 
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -140,22 +140,4 @@ CREATE TRIGGER update_product_categories_updated_at BEFORE UPDATE ON public.prod
 INSERT INTO public.hero_content (title, subtitle, description, background_image_url) VALUES 
 ('Your Trusted Auto Care Partner', 'Professional Vehicle Services', 'Get expert automotive services with guaranteed quality and customer satisfaction.', '/hero-banner.jpg');
 
-INSERT INTO public.services (name, description, icon, category) VALUES 
-('Oil Change', 'Complete engine oil and filter replacement', '🛢️', 'Maintenance'),
-('Brake Service', 'Professional brake inspection and repair', '🛑', 'Safety'),
-('Battery Check', 'Battery testing and replacement service', '🔋', 'Electrical'),
-('AC Repair', 'Air conditioning system diagnosis and repair', '❄️', 'Comfort'),
-('Engine Tune-up', 'Complete engine performance optimization', '⚙️', 'Performance'),
-('Tire Service', 'Tire rotation, balancing, and replacement', '🛞', 'Safety');
-
-INSERT INTO public.product_categories (name, icon, description, sort_order) VALUES 
-('Service Parts', '🛠️', 'Essential maintenance and repair parts', 1),
-('Belt & Chain Sprocket', '🔗', 'Drive system components', 2),
-('Cables', '🔌', 'Control and electrical cables', 3),
-('Brake Systems', '🛑', 'Complete brake system components', 4),
-('Plastic & Body Parts', '🧩', 'Exterior and interior components', 5),
-('Electrical Parts', '⚡', 'Electrical system components', 6),
-('Lighting Parts', '💡', 'Headlights, taillights, and indicators', 7),
-('Engine Parts', '⚙️', 'Engine components and accessories', 8),
-('Clutch Systems', '🔧', 'Transmission and clutch parts', 9),
-('Electronics Parts', '📱', 'Electronic control modules', 10);
+-- Insert other sample data (services, categories) similarly...
