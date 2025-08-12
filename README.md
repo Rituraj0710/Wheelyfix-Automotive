@@ -1,6 +1,6 @@
-# PikPart Smart Garage Clone
+# Wheelyfix Automotive Clone
 
-A modern, responsive clone of the PikPart Smart Garage website built with React, TypeScript, and Tailwind CSS. This project showcases a professional automotive service platform with booking functionality, service management, and admin features.
+A modern, responsive clone of the Wheelyfix Automotive website built with React, TypeScript, and Tailwind CSS. This project showcases a professional automotive service platform with booking functionality, service management, and admin features.
 
 ## 🚀 Features
 
@@ -179,11 +179,11 @@ The project can be deployed to any static hosting platform that supports Vite bu
 
 ## 📄 License
 
-This project is for educational purposes. The original PikPart Smart Garage website and brand belong to their respective owners.
+This project is for educational purposes. The original Wheelyfix Automotive website and brand belong to their respective owners.
 
 ## 🙏 Acknowledgments
 
-- [PikPart Smart Garage](https://www.pikpartsmartgarage.com/) - Original website inspiration
+- [Wheelyfix Automotive](https://www.pikpartsmartgarage.com/) - Original website inspiration
 - [shadcn/ui](https://ui.shadcn.com/) - Beautiful component library
 - [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
 - [Supabase](https://supabase.com/) - Backend as a Service
@@ -195,4 +195,4 @@ For support or questions, please open an issue in the GitHub repository or conta
 
 ---
 
-**Note**: This is a clone project created for educational purposes. All rights to the original PikPart Smart Garage brand and website belong to their respective owners.
+**Note**: This is a clone project created for educational purposes. All rights to the original Wheelyfix Automotive brand and website belong to their respective owners.

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Car, Bike, Truck, Wrench, Droplets, Sparkles, Shield, Star, Link as LinkIcon } from "lucide-react";
+import { Calendar, Thermometer, Battery, Circle, SprayCan, Car, Sparkles, ClipboardList, Shield, Wrench, Droplets, Sun, CheckCircle, Star, Link as LinkIcon, Cog, Zap, Lightbulb, Settings, Microchip, Square, Gauge, Cpu, Package } from "lucide-react";
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
 
@@ -15,6 +15,7 @@ interface ProductCategory {
   count?: number;
   color?: string;
   link?: string;
+  subtitle?: string;
 }
 
 const DynamicProductCategory = () => {
@@ -46,91 +47,111 @@ const DynamicProductCategory = () => {
   const defaultCategories: ProductCategory[] = [
     {
       id: '1',
-      name: 'Car Service',
-      icon: 'car',
-      description: 'Complete car maintenance and repair services',
+      name: 'Service Parts',
+      subtitle: 'Essential maintenance and repair parts',
+      icon: 'wrench',
+      description: 'Essential maintenance services and components for optimal vehicle performance',
       is_active: true,
       sort_order: 1,
-      count: 15,
-      color: 'orange',
-      link: '/services?category=car'
+      count: 25,
+      color: 'bright-blue',
+      link: '/services?category=maintenance'
     },
     {
       id: '2',
-      name: 'Bike Service',
-      icon: 'bike',
-      description: 'Professional bike servicing and maintenance',
+      name: 'Belt & Chain Sprocket',
+      subtitle: 'Drive system components',
+      icon: 'link',
+      description: 'High-quality belts, chains, and sprocket systems for smooth operation',
       is_active: true,
       sort_order: 2,
-      count: 12,
-      color: 'green',
-      link: '/services?category=bike'
+      count: 18,
+      color: 'deep-red',
+      link: '/services?category=belts-chains'
     },
     {
       id: '3',
-      name: 'Engine Parts',
-      icon: 'wrench',
-      description: 'Genuine engine components and accessories',
+      name: 'Cables',
+      subtitle: 'Control and electrical cables',
+      icon: 'zap',
+      description: 'Durable control and electrical cables for various vehicle systems',
       is_active: true,
       sort_order: 3,
-      count: 25,
-      color: 'blue',
-      link: '/services?category=engine'
+      count: 22,
+      color: 'orange',
+      link: '/services?category=cables'
     },
     {
       id: '4',
-      name: 'Oil & Lubricants',
-      icon: 'oil',
-      description: 'High-quality oils and lubricants',
+      name: 'Brake Systems',
+      subtitle: 'Complete brake system components',
+      icon: 'shield',
+      description: 'Complete braking system components for safety and performance',
       is_active: true,
       sort_order: 4,
-      count: 8,
-      color: 'purple',
-      link: '/services?category=oil'
+      count: 15,
+      color: 'crimson',
+      link: '/services?category=braking'
     },
     {
       id: '5',
-      name: 'Brake System',
-      icon: 'shield',
-      description: 'Brake pads, discs, and hydraulic systems',
+      name: 'Plastic & Body Parts',
+      subtitle: 'Exterior and interior components',
+      icon: 'car',
+      description: 'Body panels and exterior components for perfect fit and finish',
       is_active: true,
       sort_order: 5,
-      count: 18,
-      color: 'red',
-      link: '/services?category=brake'
+      count: 30,
+      color: 'steel-gray',
+      link: '/services?category=body'
     },
     {
       id: '6',
-      name: 'AC Service',
-      icon: 'sparkles',
-      description: 'Air conditioning maintenance and repair',
+      name: 'Lighting Parts',
+      subtitle: 'Headlights, taillights, and indicators',
+      icon: 'lightbulb',
+      description: 'Advanced lighting solutions for enhanced visibility and safety',
       is_active: true,
       sort_order: 6,
-      count: 10,
-      color: 'cyan',
-      link: '/services?category=ac'
+      count: 12,
+      color: 'amber',
+      link: '/services?category=lighting'
     },
     {
       id: '7',
-      name: 'Battery Service',
-      icon: 'shield',
-      description: 'Battery testing, charging, and replacement',
+      name: 'Engine Parts',
+      subtitle: 'Engine components and accessories',
+      icon: 'gauge',
+      description: 'Complete engine and powertrain components for maximum performance',
       is_active: true,
       sort_order: 7,
-      count: 6,
-      color: 'yellow',
-      link: '/services?category=battery'
+      count: 18,
+      color: 'teal',
+      link: '/services?category=engine'
     },
     {
       id: '8',
-      name: 'Truck Service',
-      icon: 'truck',
-      description: 'Heavy vehicle maintenance and repair',
+      name: 'Clutch Systems',
+      subtitle: 'Transmission and clutch parts',
+      icon: 'cog',
+      description: 'Clutch assemblies and transmission components for smooth operation',
       is_active: true,
       sort_order: 8,
-      count: 9,
-      color: 'indigo',
-      link: '/services?category=truck'
+      count: 16,
+      color: 'forest-green',
+      link: '/services?category=clutch'
+    },
+    {
+      id: '9',
+      name: 'Electronics Parts',
+      subtitle: 'Electronic control modules',
+      icon: 'microchip',
+      description: 'Electronic control units and advanced sensor systems',
+      is_active: true,
+      sort_order: 9,
+      count: 12,
+      color: 'purple',
+      link: '/services?category=electronics'
     }
   ];
 
@@ -148,88 +169,108 @@ const DynamicProductCategory = () => {
 
   const getCategoryIcon = (iconName: string) => {
     const iconMap: { [key: string]: React.ReactNode } = {
-      'car': <Car className="h-10 w-10" />,
-      'bike': <Bike className="h-10 w-10" />,
-      'truck': <Truck className="h-10 w-10" />,
-      'motorcycle': <Bike className="h-10 w-10" />,
-      'wrench': <Wrench className="h-10 w-10" />,
-      'oil': <Droplets className="h-10 w-10" />,
-      'sparkles': <Sparkles className="h-10 w-10" />,
-      'shield': <Shield className="h-10 w-10" />,
+      'wrench': <Wrench className="h-16 w-16" />,
+      'link': <LinkIcon className="h-16 w-16" />,
+      'zap': <Zap className="h-16 w-16" />,
+      'shield': <Shield className="h-16 w-16" />,
+      'car': <Car className="h-16 w-16" />,
+      'lightbulb': <Lightbulb className="h-16 w-16" />,
+      'settings': <Settings className="h-16 w-16" />,
+      'microchip': <Microchip className="h-16 w-16" />,
+      'droplets': <Droplets className="h-16 w-16" />,
+      'gauge': <Gauge className="h-16 w-16" />,
+      'cog': <Cog className="h-16 w-16" />,
+      'circle': <Circle className="h-16 w-16" />,
+      'star': <Star className="h-16 w-16" />,
+      'package': <Package className="h-16 w-16" />,
+      'sparkles': <Sparkles className="h-16 w-16" />,
+      'calendar': <Calendar className="h-16 w-16" />,
+      'thermometer': <Thermometer className="h-16 w-16" />,
+      'battery': <Battery className="h-16 w-16" />,
+      'spraycan': <SprayCan className="h-16 w-16" />,
+      'clipboardlist': <ClipboardList className="h-16 w-16" />,
+      'checkcircle': <CheckCircle className="h-16 w-16" />,
+      'sun': <Sun className="h-16 w-16" />,
     };
-    return iconMap[iconName.toLowerCase()] || <Wrench className="h-10 w-10" />;
+    return iconMap[iconName.toLowerCase()] || <Wrench className="h-16 w-16" />;
   };
 
   const getColorClasses = (color: string) => {
-    const colorMap: { [key: string]: { bg: string; text: string; hover: string } } = {
-      'orange': { bg: 'bg-orange-100', text: 'text-orange-600', hover: 'hover:bg-orange-200' },
-      'green': { bg: 'bg-green-100', text: 'text-green-600', hover: 'hover:bg-green-200' },
-      'blue': { bg: 'bg-blue-100', text: 'text-blue-600', hover: 'hover:bg-blue-200' },
-      'purple': { bg: 'bg-purple-100', text: 'text-purple-600', hover: 'hover:bg-purple-200' },
-      'red': { bg: 'bg-red-100', text: 'text-red-600', hover: 'hover:bg-red-200' },
-      'cyan': { bg: 'bg-cyan-100', text: 'text-cyan-600', hover: 'hover:bg-cyan-200' },
-      'yellow': { bg: 'bg-yellow-100', text: 'text-yellow-600', hover: 'hover:bg-yellow-200' },
-      'indigo': { bg: 'bg-indigo-100', text: 'text-indigo-600', hover: 'hover:bg-indigo-200' },
+    const colorMap: { [key: string]: { bg: string; text: string; hover: string; lightBg: string } } = {
+      'bright-blue': { bg: 'bg-blue-500', text: 'text-blue-500', hover: 'hover:bg-blue-600', lightBg: 'bg-blue-50' },
+      'deep-red': { bg: 'bg-red-600', text: 'text-red-600', hover: 'hover:bg-red-700', lightBg: 'bg-red-50' },
+      'orange': { bg: 'bg-orange-500', text: 'text-orange-500', hover: 'hover:bg-orange-600', lightBg: 'bg-orange-50' },
+      'crimson': { bg: 'bg-red-700', text: 'text-red-700', hover: 'hover:bg-red-800', lightBg: 'bg-red-50' },
+      'amber': { bg: 'bg-amber-500', text: 'text-amber-500', hover: 'hover:bg-amber-600', lightBg: 'bg-amber-50' },
+      'steel-gray': { bg: 'bg-gray-500', text: 'text-gray-500', hover: 'hover:bg-gray-600', lightBg: 'bg-gray-50' },
+      'teal': { bg: 'bg-teal-500', text: 'text-teal-500', hover: 'hover:bg-teal-600', lightBg: 'bg-teal-50' },
+      'forest-green': { bg: 'bg-green-600', text: 'text-green-600', hover: 'hover:bg-green-700', lightBg: 'bg-green-50' },
+      'navy-blue': { bg: 'bg-blue-700', text: 'text-blue-700', hover: 'hover:bg-blue-800', lightBg: 'bg-blue-50' },
+      'purple': { bg: 'bg-purple-600', text: 'text-purple-600', hover: 'hover:bg-purple-700', lightBg: 'bg-purple-50' },
+      'magenta': { bg: 'bg-pink-500', text: 'text-pink-500', hover: 'hover:bg-pink-600', lightBg: 'bg-pink-50' },
     };
-    return colorMap[color] || colorMap['orange'];
+    return colorMap[color] || colorMap['bright-blue'];
   };
 
   return (
-    <section className="py-20 bg-gradient-to-b from-white to-gray-50">
+    <section className="py-20 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center space-x-2 bg-accent/10 px-4 py-2 rounded-full mb-4">
-            <Star className="h-4 w-4 text-accent" />
-            <span className="text-sm font-medium text-accent">Our Categories</span>
+          <div className="inline-flex items-center space-x-2 bg-orange-500/20 px-4 py-2 rounded-full mb-4">
+            <Star className="h-4 w-4 text-orange-400" />
+            <span className="text-sm font-medium text-orange-400">Our Categories</span>
           </div>
-          <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
             Vehicle Services & Parts
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
             Choose from our comprehensive range of automotive services and genuine parts. 
             We serve all types of vehicles with professional expertise.
           </p>
         </div>
 
-        {/* Categories Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        {/* Categories Grid - Perfect Square Tiles */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6 mb-16">
           {displayCategories.map((category) => {
-            const colorClasses = getColorClasses(category.color || 'orange');
+            const colorClasses = getColorClasses(category.color || 'bright-blue');
             const CategoryCard = (
               <Card 
-                className={`p-8 text-center hover:shadow-xl transition-all duration-300 cursor-pointer group border-2 hover:border-accent/30 bg-white relative overflow-hidden ${colorClasses.hover}`}
+                className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group border-0 overflow-hidden aspect-square"
               >
-                {/* Background decoration */}
-                <div className={`absolute top-0 right-0 w-16 h-16 ${colorClasses.bg} rounded-full -translate-y-8 translate-x-8`}></div>
-                
-                <div className="relative z-10">
-                  <div className={`inline-flex items-center justify-center w-20 h-20 ${colorClasses.bg} rounded-full mb-6 group-hover:scale-110 transition-all duration-300`}>
-                    <div className={colorClasses.text}>
-                      {getCategoryIcon(category.icon)}
+                <div className="p-6 text-center h-full flex flex-col justify-between">
+                  {/* Icon Section */}
+                  <div className="flex-1 flex flex-col items-center justify-center">
+                    <div className={`inline-flex items-center justify-center w-20 h-20 ${colorClasses.bg} rounded-2xl mb-4 group-hover:scale-110 transition-all duration-300 shadow-lg`}>
+                      <div className="text-white">
+                        {getCategoryIcon(category.icon)}
+                      </div>
                     </div>
-                  </div>
-                  
-                  <h3 className="font-bold text-xl text-gray-900 mb-3 group-hover:text-accent transition-colors">
-                    {category.name}
-                  </h3>
-                  
-                  {category.description && (
-                    <p className="text-gray-600 mb-4 leading-relaxed text-sm">
-                      {category.description}
+                    
+                    {/* Title and Subtitle */}
+                    <h3 className="font-bold text-base text-gray-900 mb-2 group-hover:text-orange-600 transition-colors leading-tight">
+                      {category.name}
+                    </h3>
+                    
+                    <p className="text-xs font-medium text-gray-600 mb-3 leading-tight">
+                      {category.subtitle}
                     </p>
-                  )}
+                  </div>
 
-                  {category.count && (
-                    <div className="inline-flex items-center space-x-1 bg-gray-100 px-3 py-1 rounded-full">
-                      <span className="text-sm font-medium text-gray-700">{category.count}</span>
-                      <span className="text-xs text-gray-500">Services</span>
-                    </div>
-                  )}
+                  {/* Description and Count */}
+                  <div className="flex-shrink-0">
+                    {category.description && (
+                      <p className="text-gray-500 text-xs leading-relaxed mb-3 line-clamp-2">
+                        {category.description}
+                      </p>
+                    )}
 
-                  <div className="mt-4 flex items-center justify-center space-x-2 text-accent opacity-0 group-hover:opacity-100 transition-opacity">
-                    <LinkIcon className="h-4 w-4" />
-                    <span className="text-sm font-medium">View Services</span>
+                    {category.count && (
+                      <div className="inline-flex items-center space-x-1 bg-gray-100 px-3 py-1 rounded-full">
+                        <span className="text-sm font-medium text-gray-700">{category.count}</span>
+                        <span className="text-xs text-gray-500">Parts</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </Card>
@@ -247,54 +288,33 @@ const DynamicProductCategory = () => {
           })}
         </div>
 
-        {/* Call to Action */}
-        <div className="text-center mt-16">
-          <div className="bg-white rounded-2xl shadow-lg p-8 max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              Need a Custom Service?
-            </h3>
-            <p className="text-gray-600 mb-6">
-              Can't find what you're looking for? Contact our experts for custom solutions.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/contact">
-                <Button 
-                  className="bg-accent hover:bg-accent/90 text-white font-semibold px-8 py-3"
-                  size="lg"
-                >
-                  Contact Expert
-                </Button>
-              </Link>
-              <Link to="/services">
-                <Button 
-                  variant="outline" 
-                  className="border-accent text-accent hover:bg-accent hover:text-white font-semibold px-8 py-3"
-                  size="lg"
-                >
-                  View All Services
-                </Button>
-              </Link>
-            </div>
-          </div>
+        {/* Browse More Button */}
+        <div className="text-center">
+          <Button 
+            className="bg-orange-500 hover:bg-orange-600 text-white font-bold text-lg px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+            size="lg"
+          >
+            Browse More
+          </Button>
         </div>
 
         {/* Stats */}
         <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="text-center">
-            <div className="text-3xl font-bold text-accent mb-2">500+</div>
-            <div className="text-gray-600">Service Centers</div>
+            <div className="text-3xl font-bold text-orange-500 mb-2">500+</div>
+            <div className="text-gray-300">Service Centers</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-accent mb-2">50+</div>
-            <div className="text-gray-600">Service Types</div>
+            <div className="text-3xl font-bold text-orange-500 mb-2">50+</div>
+            <div className="text-gray-300">Service Types</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-accent mb-2">1000+</div>
-            <div className="text-gray-600">Parts Available</div>
+            <div className="text-3xl font-bold text-orange-500 mb-2">1000+</div>
+            <div className="text-gray-300">Parts Available</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-accent mb-2">24/7</div>
-            <div className="text-gray-600">Support Available</div>
+            <div className="text-3xl font-bold text-orange-500 mb-2">24/7</div>
+            <div className="text-gray-300">Support Available</div>
           </div>
         </div>
       </div>
@@ -303,3 +323,4 @@ const DynamicProductCategory = () => {
 };
 
 export default DynamicProductCategory;
+

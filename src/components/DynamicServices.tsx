@@ -2,9 +2,13 @@ import { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Wrench, Car, Bike, Settings, Droplets, Sparkles, Shield, Clock, MapPin, Star, Zap, Gauge } from "lucide-react";
+import { Calendar, Thermometer, Battery, Circle, SprayCan, Car, Sparkles, ClipboardList, Shield, Wrench, Droplets, Sun, CheckCircle, Star, Zap, Gauge, MapPin, Clock, Settings } from "lucide-react";
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
+
+import appMockup from '@/assets/app-mockup.png';
+import logoImg from '@/assets/logo.jpg';
+// All Pikpart references removed. Use only icons, appMockup, and logoImg for images. No Pikpart name or icon used anywhere.
 
 interface Service {
   id: string;
@@ -23,6 +27,33 @@ const DynamicServices = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("All");
+  const [vehicleTab, setVehicleTab] = useState<'Two Wheeler' | 'Four Wheeler'>('Two Wheeler');
+
+  // Service data for demo (add more as needed)
+  const twoWheelerServices = [
+    { name: 'Suspension', icon: <Wrench className="h-12 w-12 text-blue-600" />, color: 'blue' },
+    { name: 'Clutch', icon: <Circle className="h-12 w-12 text-green-600" />, color: 'green' },
+    { name: 'Tyre Service', icon: <Circle className="h-12 w-12 text-orange-600" />, color: 'orange' },
+    { name: 'Electricals Services', icon: <Zap className="h-12 w-12 text-yellow-600" />, color: 'yellow' },
+    { name: 'Body Parts', icon: <Shield className="h-12 w-12 text-purple-600" />, color: 'purple' },
+    { name: 'Engines & Carburetor', icon: <Droplets className="h-12 w-12 text-red-600" />, color: 'red' },
+    { name: 'Service & Repair', icon: <Sparkles className="h-12 w-12 text-indigo-600" />, color: 'indigo' },
+    { name: 'Transmission', icon: <Gauge className="h-12 w-12 text-teal-600" />, color: 'teal' },
+    { name: 'Fitments', icon: <Settings className="h-12 w-12 text-pink-600" />, color: 'pink' },
+  ];
+  const fourWheelerServices = [
+    { name: 'Car Services', icon: <Calendar className="h-12 w-12 text-blue-600" />, color: 'blue' },
+    { name: 'AC Service & Repair', icon: <Thermometer className="h-12 w-12 text-cyan-600" />, color: 'cyan' },
+    { name: 'Batteries', icon: <Battery className="h-12 w-12 text-yellow-600" />, color: 'yellow' },
+    { name: 'Tyres & Wheel Care', icon: <Circle className="h-12 w-12 text-orange-600" />, color: 'orange' },
+    { name: 'Denting & Painting', icon: <SprayCan className="h-12 w-12 text-red-600" />, color: 'red' },
+    { name: 'Detailing Services', icon: <Sparkles className="h-12 w-12 text-purple-600" />, color: 'purple' },
+    { name: 'Car Spa & Cleaning', icon: <Sun className="h-12 w-12 text-green-600" />, color: 'green' },
+    { name: 'Car Inspections', icon: <ClipboardList className="h-12 w-12 text-indigo-600" />, color: 'indigo' },
+    { name: 'Windshields & Lights', icon: <Star className="h-12 w-12 text-amber-600" />, color: 'amber' },
+    { name: 'Suspension & Fitments', icon: <Wrench className="h-12 w-12 text-teal-600" />, color: 'teal' },
+    { name: 'Insurance Claims', icon: <Shield className="h-12 w-12 text-emerald-600" />, color: 'emerald' },
+  ];
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -176,123 +207,67 @@ const DynamicServices = () => {
   };
 
   const getColorClasses = (color: string) => {
-    const colorMap: { [key: string]: { bg: string; text: string; hover: string; border: string } } = {
-      'orange': { bg: 'bg-orange-100', text: 'text-orange-600', hover: 'hover:bg-orange-200', border: 'hover:border-orange-300' },
-      'green': { bg: 'bg-green-100', text: 'text-green-600', hover: 'hover:bg-green-200', border: 'hover:border-green-300' },
-      'blue': { bg: 'bg-blue-100', text: 'text-blue-600', hover: 'hover:bg-blue-200', border: 'hover:border-blue-300' },
-      'purple': { bg: 'bg-purple-100', text: 'text-purple-600', hover: 'hover:bg-purple-200', border: 'hover:border-purple-300' },
-      'red': { bg: 'bg-red-100', text: 'text-red-600', hover: 'hover:bg-red-200', border: 'hover:border-red-300' },
-      'cyan': { bg: 'bg-cyan-100', text: 'text-cyan-600', hover: 'hover:bg-cyan-200', border: 'hover:border-cyan-300' },
-      'yellow': { bg: 'bg-yellow-100', text: 'text-yellow-600', hover: 'hover:bg-yellow-200', border: 'hover:border-yellow-300' },
-      'indigo': { bg: 'bg-indigo-100', text: 'text-indigo-600', hover: 'hover:bg-indigo-200', border: 'hover:border-indigo-300' },
+    const colorMap: { [key: string]: { bg: string; border: string; hover: string } } = {
+      'blue': { bg: 'bg-blue-50', border: 'border-blue-200', hover: 'hover:bg-blue-100' },
+      'green': { bg: 'bg-green-50', border: 'border-green-200', hover: 'hover:bg-green-100' },
+      'orange': { bg: 'bg-orange-50', border: 'border-orange-200', hover: 'hover:bg-orange-100' },
+      'yellow': { bg: 'bg-yellow-50', border: 'border-yellow-200', hover: 'hover:bg-yellow-100' },
+      'purple': { bg: 'bg-purple-50', border: 'border-purple-200', hover: 'hover:bg-purple-100' },
+      'red': { bg: 'bg-red-50', border: 'border-red-200', hover: 'hover:bg-red-100' },
+      'indigo': { bg: 'bg-indigo-50', border: 'border-indigo-200', hover: 'hover:bg-indigo-100' },
+      'teal': { bg: 'bg-teal-50', border: 'border-teal-200', hover: 'hover:bg-teal-100' },
+      'cyan': { bg: 'bg-cyan-50', border: 'border-cyan-200', hover: 'hover:bg-cyan-100' },
+      'pink': { bg: 'bg-pink-50', border: 'border-pink-200', hover: 'hover:bg-pink-100' },
+      'amber': { bg: 'bg-amber-50', border: 'border-amber-200', hover: 'hover:bg-amber-100' },
+      'emerald': { bg: 'bg-emerald-50', border: 'border-emerald-200', hover: 'hover:bg-emerald-100' },
     };
-    return colorMap[color] || colorMap['orange'];
+    return colorMap[color] || colorMap['blue'];
   };
 
   return (
     <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
       <div className="container mx-auto px-4">
         {/* Section Header */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center space-x-2 bg-accent/10 px-4 py-2 rounded-full mb-4">
-            <Star className="h-4 w-4 text-accent" />
-            <span className="text-sm font-medium text-accent">Our Services</span>
-          </div>
-          <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-            Professional Auto Services
+        <div className="text-center mb-10">
+          <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-2">
+            OUR SERVICES
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Get your car or bike serviced by certified technicians using genuine parts. 
-            We offer doorstep pickup and delivery for your convenience.
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-6">
+            Delivering superior detailing and repairing solutions
           </p>
-        </div>
-
-        {/* Service Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="flex justify-center mb-12">
-            <TabsList className="bg-white shadow-lg border border-gray-200 p-1 rounded-full">
-              {categories.map((category) => (
-                <TabsTrigger 
-                  key={category} 
-                  value={category} 
-                  className="px-8 py-3 rounded-full data-[state=active]:bg-accent data-[state=active]:text-white font-medium"
-                >
-                  {category}
-                </TabsTrigger>
-              ))}
-            </TabsList>
+          <div className="flex justify-center mb-8">
+            <button
+              className={`px-8 py-3 rounded-full font-semibold mr-2 transition-all duration-200 ${vehicleTab === 'Two Wheeler' ? 'bg-orange-500 text-white shadow' : 'bg-gray-200 text-gray-700'}`}
+              onClick={() => setVehicleTab('Two Wheeler')}
+            >
+              Two Wheeler
+            </button>
+            <button
+              className={`px-8 py-3 rounded-full font-semibold transition-all duration-200 ${vehicleTab === 'Four Wheeler' ? 'bg-orange-500 text-white shadow' : 'bg-gray-200 text-gray-700'}`}
+              onClick={() => setVehicleTab('Four Wheeler')}
+            >
+              Four Wheeler
+            </button>
           </div>
-
-          {categories.map((category) => (
-            <TabsContent key={category} value={category}>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {displayServices
-                  .filter(service => category === 'All' || service.category === category)
-                  .map((service) => {
-                    const colorClasses = getColorClasses(service.color || 'orange');
-                    const ServiceCard = (
-                      <Card 
-                        className={`p-8 text-center hover:shadow-xl transition-all duration-300 cursor-pointer group border-2 ${colorClasses.border} bg-white relative overflow-hidden ${colorClasses.hover}`}
-                      >
-                        {/* Background decoration */}
-                        <div className={`absolute top-0 right-0 w-20 h-20 ${colorClasses.bg} rounded-full -translate-y-10 translate-x-10`}></div>
-                        
-                        <div className="relative z-10">
-                          <div className={`inline-flex items-center justify-center w-16 h-16 ${colorClasses.bg} rounded-full mb-6 group-hover:scale-110 transition-all duration-300`}>
-                            <div className={colorClasses.text}>
-                              {getServiceIcon(service.icon)}
-                            </div>
-                          </div>
-                          
-                          <h3 className="font-bold text-xl text-gray-900 mb-3 group-hover:text-accent transition-colors">
-                            {service.name}
-                          </h3>
-                          
-                          {service.description && (
-                            <p className="text-gray-600 mb-6 leading-relaxed">
-                              {service.description}
-                            </p>
-                          )}
-
-                          <div className="flex items-center justify-between mb-6">
-                            {service.price && (
-                              <div className="text-left">
-                                <div className="text-sm text-gray-500">Starting from</div>
-                                <div className="text-2xl font-bold text-accent">{service.price}</div>
-                              </div>
-                            )}
-                            {service.duration && (
-                              <div className="text-right">
-                                <div className="text-sm text-gray-500">Duration</div>
-                                <div className="font-semibold text-gray-900">{service.duration}</div>
-                              </div>
-                            )}
-                          </div>
-
-                          <Button 
-                            className="w-full bg-accent hover:bg-accent/90 text-white font-semibold"
-                            size="lg"
-                          >
-                            Book Now
-                          </Button>
-                        </div>
-                      </Card>
-                    );
-
-                    return service.link ? (
-                      <Link key={service.id} to={service.link}>
-                        {ServiceCard}
-                      </Link>
-                    ) : (
-                      <div key={service.id}>
-                        {ServiceCard}
-                      </div>
-                    );
-                  })}
-              </div>
-            </TabsContent>
-          ))}
-        </Tabs>
+        </div>
+        {/* Horizontal Scrollable Service Cards */}
+        <div className="overflow-x-auto pb-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 min-w-max">
+            {(vehicleTab === 'Two Wheeler' ? twoWheelerServices : fourWheelerServices).map((service, idx) => {
+              const colorClasses = getColorClasses(service.color);
+              return (
+                <div key={idx} className={`flex flex-col items-center bg-white rounded-lg border-2 ${colorClasses.border} p-6 min-w-[160px] max-w-[180px] mx-2 shadow-sm hover:shadow-md transition-all duration-200 ${colorClasses.hover}`}>
+                  <div className={`w-16 h-16 flex items-center justify-center mb-4 ${colorClasses.bg} rounded-lg`}>
+                    {service.icon}
+                  </div>
+                  <h3 className="text-sm font-bold text-gray-900 text-center leading-tight">
+                    {service.name}
+                  </h3>
+                </div>
+              );
+            })}
+          </div>
+        </div>
 
         {/* Service Features */}
         <div className="mt-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
