@@ -528,21 +528,21 @@ const DynamicProductCategory = () => {
               <Card 
                 className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group border-0 overflow-hidden aspect-square"
               >
-                <div className="p-6 text-center h-full flex flex-col justify-between">
+                <div className="p-8 text-center h-full flex flex-col justify-between">
                   {/* Icon Section */}
                   <div className="flex-1 flex flex-col items-center justify-center">
-                    <div className={`inline-flex items-center justify-center w-20 h-20 ${colorClasses.bg} rounded-2xl mb-4 group-hover:scale-110 transition-all duration-300 shadow-lg`}>
+                    <div className={`inline-flex items-center justify-center w-20 h-20 ${colorClasses.bg} rounded-2xl mb-6 group-hover:scale-110 transition-all duration-300 shadow-lg`}>
                       <div className="text-white">
                         {getCategoryIcon(category.icon)}
                       </div>
                     </div>
                     
                     {/* Title and Subtitle */}
-                    <h3 className="font-bold text-base text-gray-900 mb-2 group-hover:text-orange-600 transition-colors leading-tight">
+                    <h3 className="font-bold text-base text-gray-900 mb-3 group-hover:text-orange-600 transition-colors leading-tight">
                       {category.name}
                     </h3>
                     
-                    <p className="text-xs font-medium text-gray-600 mb-3 leading-tight">
+                    <p className="text-xs font-medium text-gray-600 mb-4 leading-tight">
                       {category.subtitle}
                     </p>
                   </div>
@@ -550,7 +550,7 @@ const DynamicProductCategory = () => {
                   {/* Description and Count */}
                   <div className="flex-shrink-0">
                     {category.description && (
-                      <p className="text-gray-500 text-xs leading-relaxed mb-3 line-clamp-2">
+                      <p className="text-gray-500 text-xs leading-relaxed mb-4 line-clamp-2">
                         {category.description}
                       </p>
                     )}
