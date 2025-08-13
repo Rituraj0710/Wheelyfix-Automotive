@@ -533,15 +533,15 @@ const DynamicProductCategory = () => {
                   <div className="flex-1 flex flex-col items-center justify-center">
                     <div className={`inline-flex items-center justify-center w-20 h-20 ${colorClasses.bg} rounded-2xl mb-6 group-hover:scale-110 transition-all duration-300 shadow-lg`}>
                       <div className="text-white">
-                        {getCategoryIcon(category.icon)}
-                      </div>
+                      {getCategoryIcon(category.icon)}
                     </div>
-                    
+                  </div>
+                  
                     {/* Title and Subtitle */}
                     <h3 className="font-bold text-base text-gray-900 mb-3 group-hover:text-orange-600 transition-colors leading-tight">
-                      {category.name}
-                    </h3>
-                    
+                    {category.name}
+                  </h3>
+                  
                     <p className="text-xs font-medium text-gray-600 mb-4 leading-tight">
                       {category.subtitle}
                     </p>
@@ -552,15 +552,15 @@ const DynamicProductCategory = () => {
                     {category.description && (
                       <p className="text-gray-500 text-xs leading-relaxed mb-4 line-clamp-2">
                         {category.description}
-                      </p>
-                    )}
+                    </p>
+                  )}
 
-                    {category.count && (
-                      <div className="inline-flex items-center space-x-1 bg-gray-100 px-3 py-1 rounded-full">
-                        <span className="text-sm font-medium text-gray-700">{category.count}</span>
+                  {category.count && (
+                    <div className="inline-flex items-center space-x-1 bg-gray-100 px-3 py-1 rounded-full">
+                      <span className="text-sm font-medium text-gray-700">{category.count}</span>
                         <span className="text-xs text-gray-500">Parts</span>
-                      </div>
-                    )}
+                    </div>
+                  )}
                   </div>
                 </div>
               </Card>
@@ -580,12 +580,12 @@ const DynamicProductCategory = () => {
 
         {/* Browse More Button */}
         <div className="text-center">
-          <Button 
+                <Button 
             className="bg-orange-500 hover:bg-orange-600 text-white font-bold text-lg px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
-            size="lg"
-          >
+                  size="lg"
+                >
             Browse More
-          </Button>
+                </Button>
         </div>
 
         {/* Stats */}

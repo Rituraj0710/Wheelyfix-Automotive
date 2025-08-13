@@ -6,7 +6,7 @@ import HowWeWork from "@/components/HowWeWork";
 import Testimonials from "@/components/Testimonials";
 import AppDownload from "@/components/AppDownload";
 import Brands from "@/components/Brands";
-import RecentBlogs from "@/components/RecentBlogs";
+import RecentVlogs from "@/components/RecentBlogs";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -20,7 +20,7 @@ const Index = () => {
       <Testimonials />
       <AppDownload />
       <Brands />
-      <RecentBlogs />
+      <RecentVlogs />
       <Footer />
     </div>
   );

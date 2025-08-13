@@ -10,6 +10,8 @@ import Booking from './pages/Booking';
 import Cart from './pages/Cart';
 import Blogs from './pages/Blogs';
 import Admin from './pages/Admin';
+import About from './pages/About';
+import Contact from './pages/Contact';
 import NotFound from './pages/NotFound';
 
 // Service Pages
@@ -37,6 +39,8 @@ function App() {
             <Route path="/booking" element={<Booking />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/blogs" element={<Blogs />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="/admin" element={<Admin />} />
             
             {/* Service Routes */}
