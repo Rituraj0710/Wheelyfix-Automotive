@@ -15,6 +15,16 @@ const Header = () => {
   const { isAdmin } = useUserRole();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Handle scroll effect
+  useState(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleAuthAction = () => {
     if (user) {
@@ -142,29 +152,50 @@ const Header = () => {
       </div>
 
       {/* Main header */}
-      <div className="container mx-auto px-4 py-4">
+      <div className={`container mx-auto px-4 py-3 transition-all duration-300 ${
+        isScrolled ? 'py-2' : 'py-4'
+      }`}>
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center space-x-3">
-            <img src={wheelyfixLogo} alt="Wheelyfix Automotive" className="h-12 w-12" />
+          <Link 
+            to="/" 
+            className="flex items-center space-x-3 group"
+          >
+            <img 
+              src={wheelyfixLogo} 
+              alt="Wheelyfix Automotive" 
+              className={`transition-all duration-300 ${
+                isScrolled ? 'h-10 w-10' : 'h-12 w-12'
+              }`}
+            />
             <div>
-              <span className="text-2xl font-bold text-gray-900">WHEELYFIX</span>
-              <div className="text-xs text-gray-600">Wheelyfix Automotive</div>
+              <span className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent group-hover:to-primary-600 transition-all duration-300">
+                WHEELYFIX
+              </span>
+              <div className="text-xs text-gray-600 font-medium">Automotive Excellence</div>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-8">
+          <nav className="hidden lg:flex items-center space-x-1">
             {navigationItems.map((item) => (
               <Link key={item.name} to={item.href}>
-                <Button variant="ghost" className="text-gray-700 hover:text-accent font-medium">
+                <Button 
+                  variant="ghost" 
+                  className="text-gray-700 hover:text-primary-600 font-medium relative group px-4"
+                >
                   {item.name}
+                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
                 </Button>
               </Link>
             ))}
             {isAdmin && (
               <Link to="/admin">
-                <Button variant="ghost" className="text-gray-700 hover:text-accent font-medium">
+                <Button 
+                  variant="ghost" 
+                  className="text-gray-700 hover:text-primary-600 font-medium relative group px-4"
+                >
                   Admin
+                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
                 </Button>
               </Link>
             )}
@@ -172,21 +203,45 @@ const Header = () => {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="text-gray-700 hover:text-accent">
-                    <User className="h-4 w-4 mr-2" />
-                    {user.email}
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-gray-700 hover:text-primary-600 hover:bg-primary-50 transition-colors duration-200 font-medium"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
+                        <User className="h-4 w-4 text-primary-600" />
+                      </div>
+                      <span className="max-w-[150px] truncate">{user.email}</span>
+                    </div>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem onClick={() => navigate("/profile")}>
-                    Profile
+                <DropdownMenuContent align="end" className="w-56 p-2">
+                  <DropdownMenuItem 
+                    onClick={() => navigate("/profile")}
+                    className="rounded-lg hover:bg-primary-50 cursor-pointer py-2"
+                  >
+                    <User className="h-4 w-4 mr-2 text-primary-600" />
+                    <span>Profile</span>
                   </DropdownMenuItem>
                   {isAdmin && (
-                    <DropdownMenuItem onClick={() => navigate("/admin")}>
-                      Admin Panel
+                    <DropdownMenuItem 
+                      onClick={() => navigate("/admin")}
+                      className="rounded-lg hover:bg-primary-50 cursor-pointer py-2"
+                    >
+                      <span className="flex items-center">
+                        <svg className="h-4 w-4 mr-2 text-primary-600" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Admin Panel
+                      </span>
                     </DropdownMenuItem>
                   )}
-                  <DropdownMenuItem onClick={signOut}>
+                  <DropdownMenuItem 
+                    onClick={signOut}
+                    className="rounded-lg hover:bg-red-50 cursor-pointer py-2 mt-1 text-red-600 hover:text-red-700"
+                  >
                     <LogOut className="h-4 w-4 mr-2" />
                     Log Out
                   </DropdownMenuItem>

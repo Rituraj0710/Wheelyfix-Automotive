@@ -1,10 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/toaster';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 
 // Pages
 import Index from './pages/Index';
 import Login from './pages/Login';
+import SignIn from './pages/SignIn';
+import Register from './pages/Register';
 import Services from './pages/Services';
 import Booking from './pages/Booking';
 import Cart from './pages/Cart';
@@ -13,6 +16,7 @@ import Admin from './pages/Admin';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import NotFound from './pages/NotFound';
+import Dashboard from './pages/Dashboard';
 
 // Service Pages
 import GeneralService from './pages/services/GeneralService';
@@ -30,18 +34,21 @@ const queryClient = new QueryClient();
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Router>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <div className="App">
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/register" element={<Register />} />
             <Route path="/services" element={<Services />} />
-            <Route path="/booking" element={<Booking />} />
-            <Route path="/cart" element={<Cart />} />
+            <Route path="/booking" element={<ProtectedRoute><Booking /></ProtectedRoute>} />
+            <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
             <Route path="/blogs" element={<Blogs />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             
             {/* Service Routes */}
             <Route path="/services/general-service" element={<GeneralService />} />
