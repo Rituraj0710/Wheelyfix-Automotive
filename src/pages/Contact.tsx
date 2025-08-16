@@ -1,318 +1,332 @@
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Mail, Phone, MapPin, Clock, MessageCircle, Send, Check } from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
+import Header from "@/components/Header"
+import Footer from "@/components/Footer"
+import PageBanner from "@/components/PageBanner"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { 
+  MapPin, 
+  Phone, 
+  Mail, 
+  Clock, 
+  MessageSquare,
+  Send,
+  Star,
+  CheckCircle
+} from "lucide-react"
 
 const Contact = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    subject: "",
-    message: "",
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const contactInfo = [
+    {
+      icon: <Phone className="h-6 w-6" />,
+      title: "Call Us",
+      details: ["+91 98765 43210", "+91 98765 43211"],
+      description: "24/7 customer support"
+    },
+    {
+      icon: <Mail className="h-6 w-6" />,
+      title: "Email Us",
+      details: ["info@wheelyfix.com", "support@wheelyfix.com"],
+      description: "We'll respond within 2 hours"
+    },
+    {
+      icon: <MapPin className="h-6 w-6" />,
+      title: "Visit Us",
+      details: ["500+ Service Centers", "Across India"],
+      description: "Find your nearest center"
+    },
+    {
+      icon: <Clock className="h-6 w-6" />,
+      title: "Business Hours",
+      details: ["Mon-Sat: 8:00 AM - 8:00 PM", "Sunday: 9:00 AM - 6:00 PM"],
+      description: "Emergency support available 24/7"
+    }
+  ]
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    // Simulate form submission
-    setTimeout(() => {
-      console.log('Form submitted:', formData);
-      setIsSubmitting(false);
-      setIsSubmitted(true);
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        subject: "",
-        message: "",
-      });
-      
-      // Show success message
-      toast.success("Your message has been sent successfully!");
-      
-      // Reset submission status after 3 seconds
-      setTimeout(() => {
-        setIsSubmitted(false);
-      }, 3000);
-    }, 1500);
-  };
+  const features = [
+    {
+      icon: <CheckCircle className="h-5 w-5" />,
+      text: "24/7 Customer Support"
+    },
+    {
+      icon: <CheckCircle className="h-5 w-5" />,
+      text: "Quick Response Time"
+    },
+    {
+      icon: <CheckCircle className="h-5 w-5" />,
+      text: "Expert Technical Assistance"
+    },
+    {
+      icon: <CheckCircle className="h-5 w-5" />,
+      text: "Multiple Contact Channels"
+    }
+  ]
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-primary to-accent text-white py-20">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Contact Us</h1>
-          <p className="text-xl max-w-2xl mx-auto">
-            We're here to help and answer any questions you might have.
-          </p>
-        </div>
-      </section>
+      <PageBanner
+        title="We're Here to Help You"
+        subtitle="Have questions or need a booking? Our team is ready to assist you 24/7"
+        imageUrl="https://images.unsplash.com/photo-1517502166878-35c93a0072bb?q=80&w=1920&auto=format&fit=crop"
+      >
+        <Button size="lg" className="bg-accent hover:bg-accent/90 text-white px-8 py-3 text-lg">Call Now</Button>
+        <Button variant="outline" size="lg" className="border-accent text-accent hover:bg-accent hover:text-white px-8 py-3 text-lg">Send Message</Button>
+      </PageBanner>
 
-      {/* Contact Info & Form */}
+      {/* Contact Information */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-12">
-            {/* Contact Information */}
-            <div>
-              <h2 className="text-3xl font-bold text-foreground mb-8">Get in Touch</h2>
-              
-              <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="bg-primary/10 p-3 rounded-full">
-                    <MapPin className="h-6 w-6 text-primary" />
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {contactInfo.map((info, index) => (
+              <Card key={index} className="text-center hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4 text-accent">
+                    {info.icon}
                   </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-foreground">Our Location</h3>
-                    <p className="text-muted-foreground">
-                      123 Automotive Street, Tech Park<br />
-                      Bangalore, Karnataka 560001
-                    </p>
+                  <CardTitle className="text-xl">{info.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {info.details.map((detail, idx) => (
+                      <div key={idx} className="text-gray-900 font-medium">{detail}</div>
+                    ))}
                   </div>
-                </div>
-                
-                <div className="flex items-start gap-4">
-                  <div className="bg-primary/10 p-3 rounded-full">
-                    <Mail className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-foreground">Email Us</h3>
-                    <p className="text-muted-foreground">
-                      <a href="mailto:info@wheelyfix.com" className="hover:text-primary transition-colors">
-                        info@wheelyfix.com
-                      </a>
-                      <br />
-                      <a href="mailto:support@wheelyfix.com" className="hover:text-primary transition-colors">
-                        support@wheelyfix.com
-                      </a>
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-4">
-                  <div className="bg-primary/10 p-3 rounded-full">
-                    <Phone className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-foreground">Call Us</h3>
-                    <p className="text-muted-foreground">
-                      <a href="tel:+919876543210" className="hover:text-primary transition-colors">
-                        +91 98765 43210
-                      </a>
-                      <br />
-                      <a href="tel:+918888888888" className="hover:text-primary transition-colors">
-                        +91 88888 88888 (Toll Free)
-                      </a>
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-4">
-                  <div className="bg-primary/10 p-3 rounded-full">
-                    <Clock className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-foreground">Working Hours</h3>
-                    <p className="text-muted-foreground">
-                      Monday - Saturday: 8:00 AM - 9:00 PM<br />
-                      Sunday: 9:00 AM - 2:00 PM
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="mt-8">
-                <h3 className="text-lg font-semibold text-foreground mb-4">Follow Us</h3>
-                <div className="flex space-x-4">
-                  {[
-                    { name: 'Facebook', icon: 'facebook' },
-                    { name: 'Twitter', icon: 'twitter' },
-                    { name: 'Instagram', icon: 'instagram' },
-                    { name: 'LinkedIn', icon: 'linkedin' },
-                    { name: 'YouTube', icon: 'youtube' },
-                  ].map((social) => (
-                    <a 
-                      key={social.name}
-                      href="#" 
-                      className="bg-gray-100 hover:bg-gray-200 p-3 rounded-full text-gray-700 hover:text-primary transition-colors"
-                      aria-label={social.name}
-                    >
-                      <span className="sr-only">{social.name}</span>
-                      <i className={`fab fa-${social.icon} text-lg`}></i>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </div>
-            
-            {/* Contact Form */}
-            <div className="bg-white rounded-lg shadow-lg p-8">
-              <div className="flex items-center gap-2 mb-6">
-                <MessageCircle className="h-6 w-6 text-primary" />
-                <h2 className="text-2xl font-bold text-foreground">Send us a Message</h2>
-              </div>
-              
-              {isSubmitted ? (
-                <div className="text-center py-12">
-                  <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Check className="h-8 w-8 text-green-600" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-foreground mb-2">Thank You!</h3>
-                  <p className="text-muted-foreground mb-6">Your message has been sent successfully.</p>
-                  <Button onClick={() => setIsSubmitted(false)}>
-                    Send Another Message
-                  </Button>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-foreground mb-1">
-                        Full Name <span className="text-red-500">*</span>
-                      </label>
-                      <Input
-                        id="name"
-                        name="name"
-                        type="text"
-                        placeholder="John Doe"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                        className="w-full"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1">
-                        Email <span className="text-red-500">*</span>
-                      </label>
-                      <Input
-                        id="email"
-                        name="email"
-                        type="email"
-                        placeholder="john@example.com"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                        className="w-full"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-1">
-                      Phone Number
-                    </label>
-                    <Input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      placeholder="+91 98765 43210"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className="w-full"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="subject" className="block text-sm font-medium text-foreground mb-1">
-                      Subject <span className="text-red-500">*</span>
-                    </label>
-                    <Input
-                      id="subject"
-                      name="subject"
-                      type="text"
-                      placeholder="How can we help you?"
-                      value={formData.subject}
-                      onChange={handleChange}
-                      required
-                      className="w-full"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="message" className="block text-sm font-medium text-foreground mb-1">
-                      Your Message <span className="text-red-500">*</span>
-                    </label>
-                    <Textarea
-                      id="message"
-                      name="message"
-                      placeholder="Type your message here..."
-                      rows={5}
-                      value={formData.message}
-                      onChange={handleChange}
-                      required
-                      className="w-full"
-                    />
-                  </div>
-                  
-                  <div className="pt-2">
-                    <Button 
-                      type="submit" 
-                      className="w-full"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                          Sending...
-                        </>
-                      ) : (
-                        <>
-                          <Send className="mr-2 h-4 w-4" />
-                          Send Message
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </form>
-              )}
-            </div>
+                  <p className="text-gray-600 text-sm mt-3">{info.description}</p>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
-      
-      {/* Map Section */}
-      <section className="py-0 md:py-8 bg-gray-50">
+
+      {/* Contact Form & Map */}
+      <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
-          <div className="overflow-hidden rounded-xl shadow-xl">
-            <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.0060738126867!2d77.59754131528768!3d12.97199721841919!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae1670c9b44e6d%3A0xf8dfc3e8517e4fe0!2sTech%20Park%2C%20Bengaluru%2C%20Karnataka!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin" 
-              width="100%" 
-              height="450" 
-              style={{ border: 0 }} 
-              allowFullScreen 
-              loading="lazy"
-              title="Wheelyfix Location"
-            ></iframe>
+          <div className="grid lg:grid-cols-2 gap-12">
+            {/* Contact Form */}
+            <div>
+              <div className="mb-8">
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">Send Us a Message</h2>
+                <p className="text-gray-600">
+                  Fill out the form below and we'll get back to you as soon as possible.
+                </p>
+              </div>
+
+              <Card className="shadow-lg">
+                <CardContent className="p-6">
+                  <form className="space-y-6">
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="firstName">First Name</Label>
+                        <Input id="firstName" placeholder="Enter your first name" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="lastName">Last Name</Label>
+                        <Input id="lastName" placeholder="Enter your last name" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email Address</Label>
+                      <Input id="email" type="email" placeholder="Enter your email" />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Phone Number</Label>
+                      <Input id="phone" placeholder="Enter your phone number" />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="service">Service Required</Label>
+                      <select 
+                        id="service" 
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent"
+                      >
+                        <option value="">Select a service</option>
+                        <option value="car-service">Car Service</option>
+                        <option value="bike-service">Bike Service</option>
+                        <option value="ac-service">AC Service</option>
+                        <option value="battery-service">Battery Service</option>
+                        <option value="brake-service">Brake Service</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="message">Message</Label>
+                      <Textarea 
+                        id="message" 
+                        placeholder="Tell us about your vehicle and service needs..."
+                        rows={4}
+                      />
+                    </div>
+
+                    <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-white py-3">
+                      <Send className="h-4 w-4 mr-2" />
+                      Send Message
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Map & Additional Info */}
+            <div className="space-y-8">
+              {/* Map Placeholder */}
+              <Card className="shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <MapPin className="h-5 w-5 text-accent" />
+                    <span>Find Our Service Centers</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="bg-gray-200 rounded-lg h-64 flex items-center justify-center">
+                    <div className="text-center">
+                      <MapPin className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-600">Interactive Map Coming Soon</p>
+                      <p className="text-sm text-gray-500">500+ locations across India</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Why Choose Us */}
+              <Card className="shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Star className="h-5 w-5 text-accent" />
+                    <span>Why Choose Wheelyfix?</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {features.map((feature, index) => (
+                      <div key={index} className="flex items-center space-x-3">
+                        <div className="text-green-500">
+                          {feature.icon}
+                        </div>
+                        <span className="text-gray-700">{feature.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Emergency Contact */}
+              <Card className="shadow-lg border-accent/20 bg-accent/5">
+                <CardHeader>
+                  <CardTitle className="text-accent">Emergency Support</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3">
+                      <Phone className="h-5 w-5 text-accent" />
+                      <div>
+                        <div className="font-semibold text-gray-900">24/7 Helpline</div>
+                        <div className="text-gray-600">+91 98765 43210</div>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      For roadside assistance and emergency repairs, call our 24/7 helpline.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </section>
-      
+
+      {/* FAQ Section */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Find answers to common questions about our services and policies
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">How do I book a service?</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  You can book a service through our website, mobile app, or by calling our customer support. 
+                  We'll schedule a convenient time for you.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">What are your service hours?</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  Our service centers are open Monday to Saturday from 8:00 AM to 8:00 PM, 
+                  and Sundays from 9:00 AM to 6:00 PM. Emergency support is available 24/7.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Do you provide warranty on services?</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  Yes, we provide warranty on all our services and genuine parts. 
+                  The warranty period varies depending on the service type.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">How long does a typical service take?</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  Service duration varies from 1-4 hours depending on the type of service. 
+                  We'll provide an estimated completion time when you book.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-16 bg-gradient-to-r from-accent to-accent/90">
+        <div className="container mx-auto px-4 text-center">
+          <div className="max-w-3xl mx-auto">
+            <h3 className="text-3xl font-bold text-white mb-4">Ready to Get Started?</h3>
+            <p className="text-xl text-white/90 mb-8">
+              Contact us today to schedule your next service or get a free consultation. 
+              Our expert team is ready to help you keep your vehicle in top condition.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button variant="secondary" size="lg" className="bg-white text-accent hover:bg-gray-100 px-8 py-3 text-lg">
+                Book Service Now
+              </Button>
+              <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-accent px-8 py-3 text-lg">
+                Get Free Quote
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </div>
-  );
-};
+  )
+}
 
-export default Contact;
+export default Contact

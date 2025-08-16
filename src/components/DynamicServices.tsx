@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Calendar, Thermometer, Battery, Circle, SprayCan, Car, Sparkles, ClipboardList, Shield, Wrench, Droplets, Sun, CheckCircle, Star, Zap, Gauge, MapPin, Clock, Settings } from "lucide-react";
-import { supabase } from '@/integrations/supabase/client';
+// import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
 
 import appMockup from '@/assets/app-mockup.png';
@@ -31,28 +31,28 @@ const DynamicServices = () => {
 
   // Service data for demo (add more as needed)
   const twoWheelerServices = [
-    { name: 'Suspension', icon: <Wrench className="h-12 w-12 text-blue-600" />, color: 'blue' },
-    { name: 'Clutch', icon: <Circle className="h-12 w-12 text-green-600" />, color: 'green' },
-    { name: 'Tyre Service', icon: <Circle className="h-12 w-12 text-orange-600" />, color: 'orange' },
-    { name: 'Electricals Services', icon: <Zap className="h-12 w-12 text-yellow-600" />, color: 'yellow' },
-    { name: 'Body Parts', icon: <Shield className="h-12 w-12 text-purple-600" />, color: 'purple' },
-    { name: 'Engines & Carburetor', icon: <Droplets className="h-12 w-12 text-red-600" />, color: 'red' },
-    { name: 'Service & Repair', icon: <Sparkles className="h-12 w-12 text-indigo-600" />, color: 'indigo' },
-    { name: 'Transmission', icon: <Gauge className="h-12 w-12 text-teal-600" />, color: 'teal' },
-    { name: 'Fitments', icon: <Settings className="h-12 w-12 text-pink-600" />, color: 'pink' },
+    { name: 'Suspension', image: 'https://images.unsplash.com/photo-1542362567-b07e54358753?w=200&h=200&fit=crop&crop=center', color: 'blue' },
+    { name: 'Clutch', image: 'https://images.unsplash.com/photo-1486006920555-c77dcf18193c?w=200&h=200&fit=crop&crop=center', color: 'green' },
+    { name: 'Tyre Service', image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=200&fit=crop&crop=center', color: 'orange' },
+    { name: 'Electricals Services', image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=200&h=200&fit=crop&crop=center', color: 'yellow' },
+    { name: 'Body Parts', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=200&fit=crop&crop=center', color: 'purple' },
+    { name: 'Engines & Carburetor', image: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=200&h=200&fit=crop&crop=center', color: 'red' },
+    { name: 'Service & Repair', image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=200&h=200&fit=crop&crop=center', color: 'indigo' },
+    { name: 'Transmission', image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=200&h=200&fit=crop&crop=center', color: 'teal' },
+    { name: 'Fitments', image: 'https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?w=200&h=200&fit=crop&crop=center', color: 'pink' },
   ];
   const fourWheelerServices = [
-    { name: 'Car Services', icon: <Calendar className="h-12 w-12 text-blue-600" />, color: 'blue' },
-    { name: 'AC Service & Repair', icon: <Thermometer className="h-12 w-12 text-cyan-600" />, color: 'cyan' },
-    { name: 'Batteries', icon: <Battery className="h-12 w-12 text-yellow-600" />, color: 'yellow' },
-    { name: 'Tyres & Wheel Care', icon: <Circle className="h-12 w-12 text-orange-600" />, color: 'orange' },
-    { name: 'Denting & Painting', icon: <SprayCan className="h-12 w-12 text-red-600" />, color: 'red' },
-    { name: 'Detailing Services', icon: <Sparkles className="h-12 w-12 text-purple-600" />, color: 'purple' },
-    { name: 'Car Spa & Cleaning', icon: <Sun className="h-12 w-12 text-green-600" />, color: 'green' },
-    { name: 'Car Inspections', icon: <ClipboardList className="h-12 w-12 text-indigo-600" />, color: 'indigo' },
-    { name: 'Windshields & Lights', icon: <Star className="h-12 w-12 text-amber-600" />, color: 'amber' },
-    { name: 'Suspension & Fitments', icon: <Wrench className="h-12 w-12 text-teal-600" />, color: 'teal' },
-    { name: 'Insurance Claims', icon: <Shield className="h-12 w-12 text-emerald-600" />, color: 'emerald' },
+    { name: 'Car Services', image: 'https://images.unsplash.com/photo-1542362567-b07e54358753?w=200&h=200&fit=crop&crop=center', color: 'blue' },
+    { name: 'AC Service & Repair', image: 'https://images.unsplash.com/photo-1486006920555-c77dcf18193c?w=200&h=200&fit=crop&crop=center', color: 'cyan' },
+    { name: 'Batteries', image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=200&fit=crop&crop=center', color: 'yellow' },
+    { name: 'Tyres & Wheel Care', image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=200&h=200&fit=crop&crop=center', color: 'orange' },
+    { name: 'Denting & Painting', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=200&fit=crop&crop=center', color: 'red' },
+    { name: 'Detailing Services', image: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=200&h=200&fit=crop&crop=center', color: 'purple' },
+    { name: 'Car Spa & Cleaning', image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=200&h=200&fit=crop&crop=center', color: 'green' },
+    { name: 'Car Inspections', image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=200&h=200&fit=crop&crop=center', color: 'indigo' },
+    { name: 'Windshields & Lights', image: 'https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?w=200&h=200&fit=crop&crop=center', color: 'amber' },
+    { name: 'Suspension & Fitments', image: 'https://images.unsplash.com/photo-1542362567-b07e54358753?w=200&h=200&fit=crop&crop=center', color: 'teal' },
+    { name: 'Insurance Claims', image: 'https://images.unsplash.com/photo-1486006920555-c77dcf18193c?w=200&h=200&fit=crop&crop=center', color: 'emerald' },
   ];
 
   useEffect(() => {
@@ -257,8 +257,13 @@ const DynamicServices = () => {
               const colorClasses = getColorClasses(service.color);
               return (
                 <div key={idx} className={`flex flex-col items-center bg-white rounded-lg border-2 ${colorClasses.border} p-6 min-w-[160px] max-w-[180px] mx-2 shadow-sm hover:shadow-md transition-all duration-200 ${colorClasses.hover}`}>
-                  <div className={`w-16 h-16 flex items-center justify-center mb-4 ${colorClasses.bg} rounded-lg`}>
-                    {service.icon}
+                  <div className={`w-16 h-16 flex items-center justify-center mb-4 ${colorClasses.bg} rounded-lg overflow-hidden`}>
+                    <img 
+                      src={service.image} 
+                      alt={service.name}
+                      className="w-full h-full object-cover rounded-lg"
+                      loading="lazy"
+                    />
                   </div>
                   <h3 className="text-sm font-bold text-gray-900 text-center leading-tight">
                     {service.name}

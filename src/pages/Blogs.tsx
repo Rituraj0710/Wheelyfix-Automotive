@@ -510,7 +510,8 @@ const Blogs = () => {
       title: "Essential Car Maintenance Tips for Indian Roads",
       excerpt:
         "Learn how to keep your car in perfect condition while navigating challenging Indian road conditions.",
-      image: "/placeholder.svg",
+      image:
+        "https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?q=80&w=1200&auto=format&fit=crop",
       author: "Rajesh Kumar",
       date: "2024-01-15",
       category: "Car Care",
@@ -523,7 +524,8 @@ const Blogs = () => {
       title: "Bike Service: When and Why You Need It",
       excerpt:
         "Understanding the importance of regular bike servicing and how it extends your vehicle's life.",
-      image: "/placeholder.svg",
+      image:
+        "https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1200&auto=format&fit=crop",
       author: "Priya Sharma",
       date: "2024-01-12",
       category: "Bike Care",
@@ -536,7 +538,8 @@ const Blogs = () => {
       title: "Top 10 Warning Signs Your Car Needs Immediate Attention",
       excerpt:
         "Don't ignore these critical warning signs that indicate your car needs professional service.",
-      image: "/placeholder.svg",
+      image:
+        "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200&auto=format&fit=crop",
       author: "Amit Singh",
       date: "2024-01-10",
       category: "Car Care",
@@ -549,7 +552,8 @@ const Blogs = () => {
       title: "Monsoon Vehicle Care: Protecting Your Ride",
       excerpt:
         "Essential tips to protect your vehicle during the monsoon season in India.",
-      image: "/placeholder.svg",
+      image:
+        "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?q=80&w=1200&auto=format&fit=crop",
       author: "Sneha Patel",
       date: "2024-01-08",
       category: "Seasonal Care",
@@ -562,7 +566,8 @@ const Blogs = () => {
       title: "Electric vs Petrol: Which is Better for Indian Cities?",
       excerpt:
         "A comprehensive comparison of electric and petrol vehicles for urban Indian driving.",
-      image: "/placeholder.svg",
+      image:
+        "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=80&w=1200&auto=format&fit=crop",
       author: "Vikram Reddy",
       date: "2024-01-05",
       category: "Industry News",
@@ -576,7 +581,8 @@ const Blogs = () => {
       title: "DIY Basic Car Maintenance You Can Do at Home",
       excerpt:
         "Simple maintenance tasks every car owner can perform to save money and time.",
-      image: "/placeholder.svg",
+      image:
+        "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?q=80&w=1200&auto=format&fit=crop",
       author: "Meera Joshi",
       date: "2024-01-03",
       category: "DIY Tips",
@@ -589,7 +595,8 @@ const Blogs = () => {
       title: "The Future of Electric Vehicles in India",
       excerpt:
         "Exploring the growth and challenges of electric vehicles in the Indian market.",
-      image: "/placeholder.svg",
+      image:
+        "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1200&auto=format&fit=crop",
       author: "Rahul Verma",
       date: "2024-01-20",
       category: "Industry News",
@@ -603,7 +610,8 @@ const Blogs = () => {
         "Winter Car Care: Preparing Your Vehicle for Cold Weather",
       excerpt:
         "Essential winter car care tips to keep your vehicle running smoothly in cold conditions.",
-      image: "/placeholder.svg",
+      image:
+        "https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=1200&auto=format&fit=crop",
       author: "Anjali Mehta",
       date: "2024-01-18",
       category: "Seasonal Care",
@@ -616,7 +624,8 @@ const Blogs = () => {
       title: "How to Choose the Right Engine Oil for Your Car",
       excerpt:
         "A comprehensive guide to selecting the perfect engine oil for your vehicle's needs.",
-      image: "/placeholder.svg",
+      image:
+        "https://images.unsplash.com/photo-1486006920555-c77dcf18193c?q=80&w=1200&auto=format&fit=crop",
       author: "Vikram Singh",
       date: "2024-01-16",
       category: "Car Care",

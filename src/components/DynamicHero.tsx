@@ -18,7 +18,7 @@
 //   Car,
 //   Bike,
 // } from "lucide-react";
-// import { supabase } from "@/integrations/supabase/client";
+// // import { supabase } from "@/integrations/supabase/client";
 
 // interface HeroContent {
 //   title: string;
@@ -341,7 +341,7 @@ import {
   Zap,
   X,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+// import { supabase } from "@/integrations/supabase/client";
 
 interface HeroContent {
   title: string;

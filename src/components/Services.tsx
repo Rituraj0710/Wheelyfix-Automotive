@@ -49,15 +49,19 @@ const Services = () => {
 
         {/* Services Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6">
-          {services.map((service, index) => (
-            <Card key={index} className="p-6 text-center hover:shadow-lg transition-shadow cursor-pointer group">
-              <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">
-                {service.icon}
-              </div>
-              <h3 className="font-semibold text-gray-900 text-sm">{service.name}</h3>
-            </Card>
-          ))}
-        </div>
+  {services.map((service, index) => (
+    <Card
+      key={index}
+      className="p-6 text-center transition-transform duration-300 hover:scale-120 hover:shadow-2xl cursor-pointer group"
+    >
+      <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">
+        {service.icon}
+      </div>
+      <h3 className="font-semibold text-gray-900 text-sm">{service.name}</h3>
+    </Card>
+  ))}
+</div>
+
       </div>
     </section>
   );
