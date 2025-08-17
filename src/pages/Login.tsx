@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Mail, Lock, Car, Shield, CheckCircle } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
 import wheelyfixLogo from "@/assets/logo.jpg";
 
 const Login = () => {
@@ -14,23 +13,63 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
 
+    // Basic validation
+    if (!email.trim() || !password) {
+      setError("Please enter both email and password");
+      setIsLoading(false);
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address");
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const result = await login(email, password);
-      if (result.success) {
-        navigate("/");
-      } else {
-        setError(result.error || "Invalid email or password. Please try again.");
+      // Get the backend URL from environment variables or use a default
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+
+      const response = await fetch(`${backendUrl}/api/users/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed');
       }
+
+      // Login successful - store user data and token
+      localStorage.setItem('userInfo', JSON.stringify(data));
+      localStorage.setItem('token', data.token);
+      
+      console.log('Login successful:', data);
+      
+      // Navigate to dashboard or home page
+      navigate("/dashboard");
+      
     } catch (err) {
-      setError("Invalid email or password. Please try again.");
+      // Handle error messages from server or network
+      const msg = err?.message || "Invalid email or password. Please try again.";
+      setError(msg);
+      console.error('Login error:', err);
     } finally {
       setIsLoading(false);
     }
@@ -88,6 +127,7 @@ const Login = () => {
                       onChange={(e) => setEmail(e.target.value)}
                       className="pl-10 h-12 border-gray-300 focus:border-accent focus:ring-accent"
                       required
+                      autoComplete="email"
                     />
                   </div>
                 </div>
@@ -106,6 +146,7 @@ const Login = () => {
                       onChange={(e) => setPassword(e.target.value)}
                       className="pl-10 pr-10 h-12 border-gray-300 focus:border-accent focus:ring-accent"
                       required
+                      autoComplete="current-password"
                     />
                     <button
                       type="button"
@@ -118,7 +159,7 @@ const Login = () => {
                 </div>
 
                 {error && (
-                  <div className="text-red-600 text-sm bg-red-50 p-3 rounded-lg border border-red-200">
+                  <div className="text-red-600 text-sm bg-red-50 p-3 rounded-lg border border-red-200" role="alert">
                     {error}
                   </div>
                 )}
