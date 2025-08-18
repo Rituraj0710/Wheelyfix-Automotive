@@ -18,9 +18,7 @@
 //   Car,
 //   Bike,
 // } from "lucide-react";
-// // import { supabase } from "@/integrations/supabase/client";
-
-// interface HeroContent {
+interface HeroContent {
 //   title: string;
 //   subtitle: string;
 //   description: string;
@@ -309,13 +307,6 @@
 //             </Card>
 //           </div>
 //         </div>
-//       </div>
-//     </section>
-//   );
-// };
-
-// export default DynamicHero;
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -341,6 +332,31 @@ import {
   Zap,
   X,
 } from "lucide-react";
+import { type VehicleData, vehicleData, getBrandsForVehicleType, getModelsForBrand } from "@/data/vehicle-data";
+
+type SelectionStep = 'vehicle-type' | 'fuel-type' | 'brand' | 'model';
+type VehicleType = 'car' | 'bike';
+type FuelType = 'petrol' | 'diesel' | 'cng';
+
+interface VehicleBrand {
+  name: string;
+  logo: string;
+  models: {
+    [key in FuelType]?: string[];
+  };
+}
+
+interface VehicleTypeData {
+  brands: {
+    [key: string]: VehicleBrand;
+  };
+}
+
+interface Vehicle {
+  [key in VehicleType]: VehicleTypeData;
+}
+  };
+};
 // import { supabase } from "@/integrations/supabase/client";
 
 interface HeroContent {
@@ -501,6 +517,7 @@ const vehicleData = {
 };
 
 const DynamicHero = () => {
+  // Basic form states
   const [heroContent, setHeroContent] = useState<HeroContent | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedVehicle, setSelectedVehicle] = useState<string>("");
@@ -508,35 +525,24 @@ const DynamicHero = () => {
 
   // Vehicle selection states
   const [showVehicleSelection, setShowVehicleSelection] = useState(false);
-  const [selectionStep, setSelectionStep] = useState("vehicle-type");
-  const [selectedVehicleType, setSelectedVehicleType] = useState("");
-  const [selectedFuelType, setSelectedFuelType] = useState("");
-  const [selectedBrand, setSelectedBrand] = useState("");
-  const [selectedModel, setSelectedModel] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [selectionStep, setSelectionStep] = useState<SelectionStep>("vehicle-type");
+  const [selectedVehicleType, setSelectedVehicleType] = useState<VehicleType | ''>('');
+  const [selectedFuelType, setSelectedFuelType] = useState<FuelType | ''>('');
+  const [selectedBrand, setSelectedBrand] = useState('');
+  const [selectedModel, setSelectedModel] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    const fetchHeroContent = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("hero_content")
-          .select("*")
-          .eq("is_active", true)
-          .single();
-
-        if (data) {
-          setHeroContent(data);
-        } else if (error) {
-          console.error("Error fetching hero content:", error);
-        }
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching hero content:", error);
-        setLoading(false);
-      }
+    // TODO: Replace with your API call
+    const mockHeroContent: HeroContent = {
+      title: "India's Leading",
+      subtitle: "Auto Service Network",
+      description: "Professional Car & Bike Services at your doorstep",
+      background_image_url: "/hero-banner.jpg",
+      cta_text: "GET FREE QUOTE"
     };
-
-    fetchHeroContent();
+    setHeroContent(mockHeroContent);
+    setLoading(false);
   }, []);
 
   const backgroundImage =
@@ -547,14 +553,16 @@ const DynamicHero = () => {
     console.log("Form submitted:", { selectedVehicle, mobileNumber });
   };
 
+  type SelectionStep = 'vehicle-type' | 'fuel-type' | 'brand' | 'model';
+  
   // Vehicle selection functions
   const resetVehicleSelection = () => {
-    setSelectionStep("vehicle-type");
-    setSelectedVehicleType("");
-    setSelectedFuelType("");
-    setSelectedBrand("");
-    setSelectedModel("");
-    setSearchTerm("");
+    setSelectionStep('vehicle-type' as SelectionStep);
+    setSelectedVehicleType('');
+    setSelectedFuelType('');
+    setSelectedBrand('');
+    setSelectedModel('');
+    setSearchTerm('');
   };
 
   const closeVehicleSelection = () => {
@@ -564,70 +572,95 @@ const DynamicHero = () => {
 
   const goBack = () => {
     switch (selectionStep) {
-      case "fuel-type":
-        setSelectionStep("vehicle-type");
-        setSelectedVehicleType("");
+      case 'fuel-type':
+        setSelectionStep('vehicle-type' as SelectionStep);
+        setSelectedVehicleType('');
         break;
-      case "brand":
-        setSelectionStep("fuel-type");
-        setSelectedFuelType("");
+      case 'brand':
+        setSelectionStep('fuel-type' as SelectionStep);
+        setSelectedFuelType('');
         break;
-      case "model":
-        setSelectionStep("brand");
-        setSelectedBrand("");
+      case 'model':
+        setSelectionStep('brand' as SelectionStep);
+        setSelectedBrand('');
         break;
       default:
         break;
     }
   };
 
-  const handleVehicleTypeSelect = (type) => {
+  const handleVehicleTypeSelect = (type: VehicleType) => {
     setSelectedVehicleType(type);
-    setSelectionStep("fuel-type");
+    setSelectionStep(type === 'bike' ? 'brand' : 'fuel-type');
   };
 
-  const handleFuelTypeSelect = (fuelType) => {
+  const handleFuelTypeSelect = (fuelType: FuelType) => {
     setSelectedFuelType(fuelType);
-    setSelectionStep("brand");
+    setSelectionStep('brand');
   };
 
-  const handleBrandSelect = (brandKey) => {
+  const handleBrandSelect = (brandKey: string) => {
     setSelectedBrand(brandKey);
-    setSelectionStep("model");
+    setSelectionStep('model');
   };
 
-  const handleModelSelect = (model) => {
+  const handleModelSelect = (model: string) => {
     setSelectedModel(model);
-    const brandName =
-      vehicleData[selectedVehicleType].brands[selectedBrand].name;
-    setSelectedVehicle(`${brandName} ${model}`);
-    setShowVehicleSelection(false);
-    resetVehicleSelection();
+    if (selectedVehicleType && selectedBrand) {
+      const brandData = vehicleData[selectedVehicleType].brands[selectedBrand];
+      if (brandData) {
+        setSelectedVehicle(`${brandData.name} ${model}`);
+        setShowVehicleSelection(false);
+        resetVehicleSelection();
+      }
+    }
   };
 
   const getAvailableBrands = () => {
-    const brands = vehicleData[selectedVehicleType]?.brands || {};
-    return Object.entries(brands).filter(([key, brand]) => {
-      if (selectedVehicleType === "bike") return true;
-      return brand.models[selectedFuelType]?.length > 0;
+    if (!selectedVehicleType) return [];
+    
+    const vType = selectedVehicleType as VehicleType;
+    const vehicleTypeData = vehicleData[vType];
+    if (!vehicleTypeData?.brands) return [];
+    
+    const brands = vehicleTypeData.brands;
+    
+    return Object.entries(brands).filter(([brandKey, brandData]) => {
+      if (vType === 'bike') {
+        return brandData.models.petrol?.length > 0;
+      }
+      if (!selectedFuelType) return true;
+      const fuelType = selectedFuelType as keyof typeof brandData.models;
+      return brandData.models[fuelType]?.length > 0;
     });
   };
 
   const getAvailableModels = () => {
-    const brand = vehicleData[selectedVehicleType]?.brands[selectedBrand];
-    if (!brand) return [];
-
-    if (selectedVehicleType === "bike") {
-      return brand.models.petrol || [];
+    if (!selectedVehicleType || !selectedBrand) return [];
+    
+    const vType = selectedVehicleType as VehicleType;
+    const vehicleTypeData = vehicleData[vType] as VehicleTypeData;
+    const brands = vehicleTypeData?.brands || {};
+    
+    if (selectedBrand in brands) {
+      const brandData = brands[selectedBrand];
+      
+      if (vType === 'bike') {
+        return brandData.models.petrol || [];
+      }
+      if (!selectedFuelType) return [];
+      const fuelType = selectedFuelType as FuelType;
+      return brandData.models[fuelType] || [];
     }
-    return brand.models[selectedFuelType] || [];
+    return [];
   };
 
-  const filteredBrands = getAvailableBrands().filter(([key, brand]) =>
-    brand.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredBrands = getAvailableBrands().filter(([_, brandData]) => {
+    const brand = brandData as { name: string };
+    return brand.name.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
-  const filteredModels = getAvailableModels().filter((model) =>
+  const filteredModels = getAvailableModels().filter((model: string) =>
     model.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -1096,7 +1129,7 @@ const DynamicHero = () => {
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
-                    {filteredModels.map((model) => (
+                    {filteredModels.map((model: string) => (
                       <Card
                         key={model}
                         className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-blue-500"
@@ -1109,9 +1142,10 @@ const DynamicHero = () => {
                           <div className="text-sm font-medium">{model}</div>
                           <div className="text-xs text-gray-500">
                             {
-                              vehicleData[selectedVehicleType].brands[
-                                selectedBrand
-                              ].name
+                              (selectedVehicleType && selectedBrand
+                                ? (vehicleData[selectedVehicleType as VehicleType] as VehicleTypeData)
+                                    ?.brands?.[selectedBrand]?.name || "Select Brand"
+                                : "Select Brand")
                             }
                           </div>
                         </CardContent>

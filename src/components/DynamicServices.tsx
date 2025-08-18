@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Calendar, Thermometer, Battery, Circle, SprayCan, Car, Sparkles, ClipboardList, Shield, Wrench, Droplets, Sun, CheckCircle, Star, Zap, Gauge, MapPin, Clock, Settings } from "lucide-react";
-// import { supabase } from '@/integrations/supabase/client';
+
 import { Link } from 'react-router-dom';
 
 import appMockup from '@/assets/app-mockup.png';

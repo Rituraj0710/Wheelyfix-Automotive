@@ -1,29 +1,66 @@
-import { api } from '@/lib/api';
+import { api } from '@/lib/axios';
 
 export interface User {
   id: string;
   name: string;
   email: string;
-  // Add other user fields as needed
+  role: 'user' | 'admin';
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AuthResponse {
+  user: User;
+  token: string;
+  refreshToken: string;
 }
 
 export const authService = {
-  async login(email: string, password: string) {
-    return api.post<{ user: User; token: string }>('/users/login', { email, password });
+  async login(email: string, password: string): Promise<AuthResponse> {
+    const response = await api.post<AuthResponse>('/auth/login', { email, password });
+    this.setTokens(response.token, response.refreshToken);
+    return response;
   },
 
-  async register(userData: { name: string; email: string; password: string }) {
-    return api.post<{ user: User }>('/users', userData);
+  async register(userData: { name: string; email: string; password: string }): Promise<AuthResponse> {
+    const response = await api.post<AuthResponse>('/auth/register', userData);
+    this.setTokens(response.token, response.refreshToken);
+    return response;
   },
 
-  async getProfile() {
-    return api.get<{ user: User }>('/users/profile');
+  async getProfile(): Promise<User> {
+    return api.get<User>('/auth/profile');
   },
 
-  async logout() {
-    // Clear token from localStorage
+  async logout(): Promise<void> {
+    try {
+      await api.post('/auth/logout', {});
+    } finally {
+      this.clearTokens();
+    }
+  },
+
+  async refreshToken(refreshToken: string): Promise<{ token: string; refreshToken: string }> {
+    const response = await api.post<{ token: string; refreshToken: string }>('/auth/refresh-token', { refreshToken });
+    this.setTokens(response.token, response.refreshToken);
+    return response;
+  },
+
+  setTokens(token: string, refreshToken: string): void {
+    localStorage.setItem('token', token);
+    localStorage.setItem('refreshToken', refreshToken);
+  },
+
+  clearTokens(): void {
     localStorage.removeItem('token');
-    // Call the logout endpoint to invalidate the token on the server
-    return api.post<{ success: boolean }>('/users/logout', {});
+    localStorage.removeItem('refreshToken');
+  },
+
+  getStoredToken(): string | null {
+    return localStorage.getItem('token');
+  },
+
+  getStoredRefreshToken(): string | null {
+    return localStorage.getItem('refreshToken');
   },
 };

@@ -1,8 +1,8 @@
-import { useState, useEffect, createContext, useContext, useCallback, ReactNode } from 'react';
+import { useState, useEffect, createContext, useContext, useCallback } from 'react';
+import type { ReactNode } from 'react';
 import { toast } from '@/components/ui/use-toast';
-import { authService, User } from '@/services/authService';
-
-export { User };
+import { authService } from '@/services/authService';
+import type { User } from '@/services/authService';
 
 interface AuthContextType {
   user: User | null;
@@ -17,12 +17,15 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Check authentication status on mount and token change
   const checkAuth = useCallback(async () => {
     const token = authService.getStoredToken();
     if (!token) {
@@ -122,13 +125,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
-export const useAuth = () => {
+export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-};
 }
