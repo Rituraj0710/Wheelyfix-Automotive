@@ -18,7 +18,7 @@
 //   Car,
 //   Bike,
 // } from "lucide-react";
-interface HeroContent {
+// interface HeroContent {
 //   title: string;
 //   subtitle: string;
 //   description: string;
