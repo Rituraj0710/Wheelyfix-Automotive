@@ -9,7 +9,7 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute = ({
   children,
-  redirectPath = '/signin',
+  redirectPath = '/login',
 }: ProtectedRouteProps) => {
   const { user, loading } = useAuth();
   const location = useLocation();
@@ -25,6 +25,11 @@ const ProtectedRoute = ({
 
   // If not authenticated, redirect to login
   if (!user) {
+    try {
+      localStorage.setItem('redirectAfterLoginPath', location.pathname + location.search + location.hash);
+    } catch (e) {
+      // ignore storage errors
+    }
     return <Navigate to={redirectPath} state={{ from: location }} replace />;
   }
 

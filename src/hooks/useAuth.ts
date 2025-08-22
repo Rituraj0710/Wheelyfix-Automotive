@@ -1,134 +1,55 @@
-import { useState, useEffect, createContext, useContext, useCallback, ReactNode } from 'react';
-import { toast } from '@/components/ui/use-toast';
-import { authService, User } from '@/services/authService';
+import { useAuth as useAuthFromContext } from '@/contexts/AuthContext';
+import type { User } from '@/services/authService';
 
-export { User };
+export type { User };
 
-interface AuthContextType {
+interface UseAuthReturn {
   user: User | null;
   loading: boolean;
   error: string | null;
+  isAuthenticated: boolean;
+  isAdmin: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   register: (userData: { name: string; email: string; password: string }) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
-  isAuthenticated: boolean;
-  isAdmin: boolean;
+  signOut: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | null>(null);
+export function useAuth(): UseAuthReturn {
+  const ctx = useAuthFromContext();
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // Check authentication status on mount and token change
-  const checkAuth = useCallback(async () => {
-    const token = authService.getStoredToken();
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-
+  const wrappedLogin: UseAuthReturn['login'] = async (email, password) => {
     try {
-      const user = await authService.getProfile();
-      setUser(user);
-    } catch (err) {
-      console.error('Auth check failed:', err);
-      authService.clearTokens();
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
-
-  const login = async (email: string, password: string) => {
-    setError(null);
-    try {
-      const response = await authService.login(email, password);
-      setUser(response.user);
-      toast({
-        title: 'Welcome back!',
-        description: 'You have successfully logged in.',
-      });
+      await ctx.login(email, password);
       return { success: true };
     } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'Login failed';
-      setError(errorMsg);
-      toast({
-        title: 'Login failed',
-        description: errorMsg,
-        variant: 'destructive',
-      });
-      return { success: false, error: errorMsg };
+      return { success: false, error: err instanceof Error ? err.message : 'Login failed' };
     }
   };
 
-  const register = async (userData: { name: string; email: string; password: string }) => {
-    setError(null);
+  const wrappedRegister: UseAuthReturn['register'] = async (userData) => {
     try {
-      const response = await authService.register(userData);
-      setUser(response.user);
-      toast({
-        title: 'Welcome!',
-        description: 'Your account has been created successfully.',
-      });
+      await ctx.register(userData.name, userData.email, userData.password);
       return { success: true };
     } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'Registration failed';
-      setError(errorMsg);
-      toast({
-        title: 'Registration failed',
-        description: errorMsg,
-        variant: 'destructive',
-      });
-      return { success: false, error: errorMsg };
+      return { success: false, error: err instanceof Error ? err.message : 'Registration failed' };
     }
   };
 
-  const logout = async () => {
-    try {
-      await authService.logout();
-      setUser(null);
-      toast({
-        title: 'Logged out',
-        description: 'You have been logged out successfully.',
-      });
-    } catch (err) {
-      toast({
-        title: 'Error',
-        description: 'Failed to log out',
-        variant: 'destructive',
-      });
-    }
+  const signOut = async () => {
+    await ctx.logout();
   };
 
-  const contextValue: AuthContextType = {
-    user,
-    loading,
-    error,
-    login,
-    register,
-    logout,
-    isAuthenticated: !!user,
-    isAdmin: user?.role === 'admin',
+  return {
+    user: ctx.user,
+    loading: ctx.loading,
+    error: ctx.error,
+    isAuthenticated: !!ctx.user,
+    isAdmin: ctx.user?.role === 'admin',
+    login: wrappedLogin,
+    register: wrappedRegister,
+    logout: ctx.logout,
+    signOut,
   };
-
-  return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
 }
+

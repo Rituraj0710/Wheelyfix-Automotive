@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Mail, Lock, Car, Shield, CheckCircle } from "lucide-react";
 import wheelyfixLogo from "@/assets/logo.jpg";
+import { useAuth } from "@/hooks/useAuth";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -14,8 +15,9 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
@@ -36,40 +38,20 @@ const Login = () => {
     }
 
     try {
-      // Get the backend URL from environment variables or use a default
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
-
-      const response = await fetch(`${backendUrl}/api/users/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email.trim().toLowerCase(),
-          password: password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
+      const result = await login(email.trim().toLowerCase(), password);
+      if (result.success) {
+        const redirectPath = localStorage.getItem('redirectAfterLoginPath');
+        if (redirectPath) {
+          localStorage.removeItem('redirectAfterLoginPath');
+          navigate(redirectPath, { replace: true });
+        } else {
+          navigate("/dashboard");
+        }
+      } else {
+        setError(result.error || "Invalid email or password. Please try again.");
       }
-
-      // Login successful - store user data and token
-      localStorage.setItem('userInfo', JSON.stringify(data));
-      localStorage.setItem('token', data.token);
-      
-      console.log('Login successful:', data);
-      
-      // Navigate to dashboard or home page
-      navigate("/dashboard");
-      
     } catch (err) {
-      // Handle error messages from server or network
-      const msg = err?.message || "Invalid email or password. Please try again.";
-      setError(msg);
-      console.error('Login error:', err);
+      setError("Invalid email or password. Please try again.");
     } finally {
       setIsLoading(false);
     }

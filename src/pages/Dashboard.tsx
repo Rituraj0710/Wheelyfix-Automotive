@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, Car, Clock, FileText, Settings, User } from 'lucide-react';
+import { Calendar, Car, Clock, FileText, Settings, User, CheckCircle2 } from 'lucide-react';
+import { api } from '@/lib/api';
 
 interface Appointment {
   id: string;
@@ -25,259 +28,310 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  
+  // Pricing map for services (INR)
+  const SERVICE_PRICE_MAP: Record<string, number> = {
+    basic: 799,
+    comprehensive: 1999,
+    ac: 1499,
+    battery: 1299,
+    brake: 999,
+    suspension: 1999,
+    'oil-change': 899,
+    'wheel-alignment': 699,
+    'car-wash': 399,
+  };
+  const normalizeServiceKey = (s: string) => (s || '').toLowerCase().trim().replace(/\s+/g, '-').replace(/-service$/, '');
+  const inr = useMemo(() => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }), []);
 
   useEffect(() => {
-    // In a real app, you would fetch this data from your API
-    // This is just mock data for demonstration
-    setAppointments([
-      {
-        id: '1',
-        service: 'Oil Change',
-        date: '2023-06-15T10:00:00',
-        status: 'upcoming',
-      },
-      {
-        id: '2',
-        service: 'Brake Service',
-        date: '2023-05-20T14:30:00',
-        status: 'completed',
-      },
-    ]);
+    const load = async () => {
+      try {
+        const items = await api.authGet<Array<any>>('/bookings/my');
+        const mapped: Appointment[] = items
+          .map((b) => ({ id: b._id, service: b.serviceType, date: b.date, status: b.status }))
+          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        setAppointments(mapped);
+      } catch (e) {
+        // leave empty state on error
+      }
 
-    // Set vehicles if user has any
-    if (user?.vehicles) {
-      setVehicles(user.vehicles);
-    }
+      if (user?.vehicles) {
+        const sanitized: Vehicle[] = (user.vehicles as Array<Partial<Vehicle>>)
+          .map((v) => ({
+            type: String(v.type ?? ''),
+            model: String(v.model ?? ''),
+            year: Number(v.year ?? 0),
+            registrationNumber: String(v.registrationNumber ?? ''),
+          }))
+          .filter((v) => Boolean(v.type && v.model && v.registrationNumber && v.year > 0));
+        setVehicles(sanitized);
+      }
+    };
+    load();
   }, [user]);
+
+  const appointmentsWithPrice = useMemo(() => appointments.map(a => ({ ...a, price: SERVICE_PRICE_MAP[normalizeServiceKey(a.service)] ?? 0 })), [appointments]);
+  const nextAppointment = useMemo(() => appointmentsWithPrice.find(a => new Date(a.date).getTime() >= Date.now()), [appointmentsWithPrice]);
+  const upcomingCount = useMemo(() => appointments.filter(a => a.status === 'upcoming').length, [appointments]);
+  const completedCount = useMemo(() => appointments.filter(a => a.status === 'completed').length, [appointments]);
+  const totalAmount = useMemo(() => appointmentsWithPrice.reduce((sum, a: any) => sum + (a.price || 0), 0), [appointmentsWithPrice]);
 
   const handleLogout = async () => {
     try {
       await signOut();
-      navigate('/signin');
+      navigate('/login');
     } catch (error) {
       console.error('Logout failed:', error);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Dashboard</h1>
-          <Button variant="outline" onClick={handleLogout}>
-            Sign Out
-          </Button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg font-medium">Welcome back</CardTitle>
-              <CardDescription>{user?.name}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center">
-                <User className="h-5 w-5 text-gray-500 mr-2" />
-                <span className="text-sm text-gray-600">{user?.email}</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg font-medium">Next Appointment</CardTitle>
-              <CardDescription>Upcoming service</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {appointments.filter(a => a.status === 'upcoming').length > 0 ? (
-                <div>
-                  <div className="flex items-center mb-1">
-                    <Calendar className="h-5 w-5 text-gray-500 mr-2" />
-                    <span className="text-sm text-gray-600">
-                      {new Date(appointments[0].date).toLocaleDateString()}
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <Clock className="h-5 w-5 text-gray-500 mr-2" />
-                    <span className="text-sm text-gray-600">
-                      {new Date(appointments[0].date).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </span>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-sm text-gray-600">No upcoming appointments</p>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg font-medium">Vehicles</CardTitle>
-              <CardDescription>Your registered vehicles</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {vehicles.length > 0 ? (
-                <div className="flex items-center">
-                  <Car className="h-5 w-5 text-gray-500 mr-2" />
-                  <span className="text-sm text-gray-600">
-                    {vehicles.length} vehicle{vehicles.length !== 1 ? 's' : ''} registered
-                  </span>
-                </div>
-              ) : (
-                <div className="flex items-center">
-                  <Car className="h-5 w-5 text-gray-500 mr-2" />
-                  <span className="text-sm text-gray-600">No vehicles registered</span>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        <Tabs defaultValue="appointments" className="w-full">
-          <TabsList className="mb-6">
-            <TabsTrigger value="appointments">Appointments</TabsTrigger>
-            <TabsTrigger value="vehicles">Vehicles</TabsTrigger>
-            <TabsTrigger value="history">Service History</TabsTrigger>
-            <TabsTrigger value="settings">Account Settings</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="appointments" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Your Appointments</CardTitle>
-                <CardDescription>Manage your scheduled services</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {appointments.length > 0 ? (
-                  <div className="space-y-4">
-                    {appointments.map((appointment) => (
-                      <div
-                        key={appointment.id}
-                        className="flex justify-between items-center p-4 border rounded-lg"
-                      >
-                        <div>
-                          <h3 className="font-medium">{appointment.service}</h3>
-                          <p className="text-sm text-gray-600">
-                            {new Date(appointment.date).toLocaleDateString()} at{' '}
-                            {new Date(appointment.date).toLocaleTimeString([], {
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}
-                          </p>
-                        </div>
-                        <div>
-                          <span
-                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                              appointment.status === 'upcoming'
-                                ? 'bg-blue-100 text-blue-800'
-                                : appointment.status === 'completed'
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-red-100 text-red-800'
-                            }`}
-                          >
-                            {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-center py-8 text-gray-500">
-                    You don't have any appointments yet.
-                  </p>
-                )}
-                <div className="mt-6">
-                  <Button onClick={() => navigate('/booking')} className="w-full">
-                    Book New Appointment
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="vehicles" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Your Vehicles</CardTitle>
-                <CardDescription>Manage your registered vehicles</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {vehicles.length > 0 ? (
-                  <div className="space-y-4">
-                    {vehicles.map((vehicle, index) => (
-                      <div
-                        key={index}
-                        className="flex justify-between items-center p-4 border rounded-lg"
-                      >
-                        <div>
-                          <h3 className="font-medium">
-                            {vehicle.year} {vehicle.model}
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            {vehicle.type} • {vehicle.registrationNumber}
-                          </p>
-                        </div>
-                        <Button variant="outline" size="sm">
-                          <Settings className="h-4 w-4 mr-2" />
-                          Manage
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-center py-8 text-gray-500">
-                    You don't have any vehicles registered yet.
-                  </p>
-                )}
-                <div className="mt-6">
-                  <Button className="w-full">Add New Vehicle</Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="history" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Service History</CardTitle>
-                <CardDescription>View your past services</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-center py-8 text-gray-500">
-                  Your service history will appear here.
-                </p>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="settings" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Account Settings</CardTitle>
-                <CardDescription>Manage your account preferences</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <Button variant="outline" className="w-full justify-start">
-                    <User className="h-4 w-4 mr-2" />
-                    Edit Profile
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <FileText className="h-4 w-4 mr-2" />
-                    Notification Preferences
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50">
-                    Sign Out
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+    <div className="min-h-screen bg-background relative">
+      {/* Decorative background */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#94a3b81a_1px,transparent_1px),linear-gradient(to_bottom,#94a3b81a_1px,transparent_1px)] bg-[size:16px_24px]" />
+        <div className="absolute -top-20 -right-20 w-[360px] h-[360px] bg-primary/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-20 -left-20 w-[360px] h-[360px] bg-accent/10 rounded-full blur-3xl" />
       </div>
+      <Header />
+      <div className="container mx-auto px-4 py-12 relative">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+            <h1 className="text-4xl font-bold text-foreground">Dashboard</h1>
+            <div className="flex gap-3">
+              <Button variant="outline" onClick={() => navigate('/')}>Home</Button>
+              <Button variant="outline" onClick={handleLogout}>Sign Out</Button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <Card className="border-0 shadow-md bg-gradient-to-br from-primary/10 to-primary/5">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                  <User className="h-5 w-5 text-primary" />
+                  Welcome back
+                </CardTitle>
+                <CardDescription className="text-muted-foreground font-medium">{user?.name}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center">
+                  <span className="text-sm text-muted-foreground">{user?.email}</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-md bg-gradient-to-br from-amber-100/60 to-orange-50">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-primary" />
+                  Next Appointment
+                </CardTitle>
+                <CardDescription>{nextAppointment ? 'Upcoming service' : 'No upcoming service'}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {nextAppointment ? (
+                  <div>
+                    <div className="flex items-center mb-1">
+                      <Calendar className="h-5 w-5 text-muted-foreground mr-2" />
+                      <span className="text-sm text-foreground font-medium">
+                        {new Date(nextAppointment.date).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className="flex items-center">
+                      <Clock className="h-5 w-5 text-muted-foreground mr-2" />
+                      <span className="text-sm text-foreground font-medium">
+                        {new Date(nextAppointment.date).toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">No upcoming appointments</p>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-md bg-gradient-to-br from-emerald-50 to-teal-50">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg font-semibold">Service Summary</CardTitle>
+                <CardDescription>Quick glance</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2 text-sm text-foreground">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-blue-600" />
+                    <span className="font-medium">{upcomingCount}</span> upcoming
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-green-600" />
+                    <span className="font-medium">{completedCount}</span> completed
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Car className="h-4 w-4 text-muted-foreground" />
+                    <span className="font-medium">{vehicles.length}</span> vehicles
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <Tabs defaultValue="appointments" className="w-full">
+            <TabsList className="mb-6 bg-muted/50 p-1 rounded-lg">
+              <TabsTrigger value="appointments">Appointments</TabsTrigger>
+              <TabsTrigger value="vehicles">Vehicles</TabsTrigger>
+              <TabsTrigger value="history">Service History</TabsTrigger>
+              <TabsTrigger value="settings">Account Settings</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="appointments" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Your Appointments</CardTitle>
+                  <CardDescription>Manage your scheduled services</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {appointmentsWithPrice.length > 0 ? (
+                    <div className="space-y-4">
+                      {appointmentsWithPrice.map((appointment: any) => (
+                        <div
+                          key={appointment.id}
+                          className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 p-4 border rounded-lg bg-card shadow-sm hover:shadow-md transition-shadow"
+                        >
+                          <div>
+                            <h3 className="font-semibold capitalize text-foreground">{appointment.service}</h3>
+                            <p className="text-sm text-muted-foreground">
+                              {new Date(appointment.date).toLocaleDateString()} at{' '}
+                              {new Date(appointment.date).toLocaleTimeString([], {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                            </p>
+                            <p className="text-sm text-foreground mt-1">Charge: <span className="font-semibold">{inr.format(appointment.price)}</span></p>
+                          </div>
+                          <div className="sm:text-right">
+                            <span
+                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                appointment.status === 'upcoming'
+                                  ? 'bg-blue-100 text-blue-800'
+                                  : appointment.status === 'completed'
+                                  ? 'bg-green-100 text-green-800'
+                                  : 'bg-red-100 text-red-800'
+                              }`}
+                            >
+                              {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-center py-8 text-muted-foreground">
+                      You don't have any appointments yet.
+                    </p>
+                  )}
+                  <div className="mt-6 space-y-3">
+                    <div className="flex items-center justify-between bg-gradient-to-r from-primary/10 to-accent/10 rounded-md p-3 border">
+                      <span className="text-sm text-muted-foreground">Total amount</span>
+                      <span className="text-base font-semibold">{inr.format(totalAmount)}</span>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <Button onClick={() => navigate('/booking')} variant="secondary" className="w-full sm:flex-1">
+                        Book New Appointment
+                      </Button>
+                      <Button onClick={() => navigate('/cart')} className="w-full sm:flex-1 bg-orange-500 hover:bg-orange-600 text-white">
+                        Proceed to Payment
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="vehicles" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Your Vehicles</CardTitle>
+                  <CardDescription>Manage your registered vehicles</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {vehicles.length > 0 ? (
+                    <div className="space-y-4">
+                      {vehicles.map((vehicle, index) => (
+                        <div
+                          key={index}
+                          className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 p-4 border rounded-lg bg-card hover:border-primary/40 hover:shadow-sm transition"
+                        >
+                          <div>
+                            <h3 className="font-semibold text-foreground">
+                              {vehicle.year} {vehicle.model}
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                              {vehicle.type} • {vehicle.registrationNumber}
+                            </p>
+                          </div>
+                          <Button variant="outline" size="sm" className="w-full sm:w-auto hover:bg-primary/10">
+                            <Settings className="h-4 w-4 mr-2" />
+                            Manage
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-center py-8 text-muted-foreground">
+                      You don't have any vehicles registered yet.
+                    </p>
+                  )}
+                  <div className="mt-6">
+                    <Button className="w-full">Add New Vehicle</Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="history" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Service History</CardTitle>
+                  <CardDescription>View your past services</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-center py-8 text-muted-foreground">
+                    Your service history will appear here.
+                  </p>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="settings" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Account Settings</CardTitle>
+                  <CardDescription>Manage your account preferences</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <Button variant="outline" className="w-full justify-start">
+                      <User className="h-4 w-4 mr-2" />
+                      Edit Profile
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start">
+                      <FileText className="h-4 w-4 mr-2" />
+                      Notification Preferences
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50" onClick={handleLogout}>
+                      Sign Out
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+      <Footer />
     </div>
   );
 };

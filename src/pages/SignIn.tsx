@@ -25,7 +25,13 @@ const SignIn = () => {
     try {
       const result = await login(email, password);
       if (result.success) {
-        navigate("/");
+        const redirectPath = localStorage.getItem('redirectAfterLoginPath');
+        if (redirectPath) {
+          localStorage.removeItem('redirectAfterLoginPath');
+          navigate(redirectPath, { replace: true });
+        } else {
+          navigate("/");
+        }
       } else {
         setError(result.error || "Invalid email or password. Please try again.");
       }

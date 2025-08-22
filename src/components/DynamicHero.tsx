@@ -307,16 +307,11 @@
 //             </Card>
 //           </div>
 //         </div>
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+// Removed unused Select imports
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Star,
@@ -332,9 +327,10 @@ import {
   Zap,
   X,
 } from "lucide-react";
-import { type VehicleData, vehicleData, getBrandsForVehicleType, getModelsForBrand } from "@/data/vehicle-data";
+import { vehicleData } from "@/data/vehicle-data";
+import { api } from "@/lib/api";
 
-type SelectionStep = 'vehicle-type' | 'fuel-type' | 'brand' | 'model';
+// SelectionStep internalized in state type
 type VehicleType = 'car' | 'bike';
 type FuelType = 'petrol' | 'diesel' | 'cng';
 
@@ -352,11 +348,8 @@ interface VehicleTypeData {
   };
 }
 
-interface Vehicle {
-  [key in VehicleType]: VehicleTypeData;
-}
-  };
-};
+// type VehicleMap = { [key in VehicleType]: VehicleTypeData };
+ 
 // import { supabase } from "@/integrations/supabase/client";
 
 interface HeroContent {
@@ -367,154 +360,7 @@ interface HeroContent {
   cta_text: string;
 }
 
-// Vehicle data structure
-const vehicleData = {
-  car: {
-    brands: {
-      maruti: {
-        name: "Maruti Suzuki",
-        logo: "🚗",
-        models: {
-          petrol: [
-            "Swift",
-            "Baleno",
-            "WagonR",
-            "Alto",
-            "Dzire",
-            "Vitara Brezza",
-          ],
-          diesel: ["Swift", "Baleno", "Dzire", "Vitara Brezza", "S-Cross"],
-          cng: ["WagonR", "Alto", "Swift", "Dzire"],
-        },
-      },
-      hyundai: {
-        name: "Hyundai",
-        logo: "🚙",
-        models: {
-          petrol: ["i20", "Creta", "Verna", "Grand i10", "Santro"],
-          diesel: ["i20", "Creta", "Verna", "Venue"],
-          cng: ["Grand i10", "Santro", "Aura"],
-        },
-      },
-      tata: {
-        name: "Tata",
-        logo: "🚘",
-        models: {
-          petrol: ["Nexon", "Harrier", "Safari", "Altroz", "Tiago"],
-          diesel: ["Nexon", "Harrier", "Safari", "Altroz"],
-          cng: ["Tiago", "Tigor", "Altroz"],
-        },
-      },
-      honda: {
-        name: "Honda",
-        logo: "🚗",
-        models: {
-          petrol: ["City", "Jazz", "WR-V", "Amaze", "Civic"],
-          diesel: ["City", "WR-V", "Amaze"],
-          cng: ["Amaze", "City"],
-        },
-      },
-      mahindra: {
-        name: "Mahindra",
-        logo: "🚙",
-        models: {
-          petrol: ["XUV300", "Bolero", "Scorpio", "XUV700"],
-          diesel: ["XUV300", "Bolero", "Scorpio", "XUV700", "Thar"],
-          cng: [],
-        },
-      },
-      toyota: {
-        name: "Toyota",
-        logo: "🚗",
-        models: {
-          petrol: ["Innova Crysta", "Fortuner", "Glanza", "Urban Cruiser"],
-          diesel: ["Innova Crysta", "Fortuner"],
-          cng: ["Glanza"],
-        },
-      },
-    },
-  },
-  bike: {
-    brands: {
-      hero: {
-        name: "Hero MotoCorp",
-        logo: "🏍️",
-        models: {
-          petrol: [
-            "Splendor Plus",
-            "HF Deluxe",
-            "Passion Pro",
-            "Glamour",
-            "Xtreme 160R",
-            "Destini 125",
-          ],
-        },
-      },
-      honda_bike: {
-        name: "Honda",
-        logo: "🏍️",
-        models: {
-          petrol: [
-            "Activa 6G",
-            "CB Shine",
-            "Unicorn",
-            "Hornet 2.0",
-            "CBR150R",
-            "X-Blade",
-          ],
-        },
-      },
-      bajaj: {
-        name: "Bajaj",
-        logo: "🏍️",
-        models: {
-          petrol: [
-            "Pulsar 150",
-            "Pulsar 220F",
-            "Avenger",
-            "CT 100",
-            "Platina",
-            "Dominar 400",
-          ],
-        },
-      },
-      tvs: {
-        name: "TVS",
-        logo: "🏍️",
-        models: {
-          petrol: [
-            "Apache RTR 160",
-            "Apache RTR 200",
-            "Jupiter",
-            "NTorq",
-            "Radeon",
-            "Sport",
-          ],
-        },
-      },
-      yamaha: {
-        name: "Yamaha",
-        logo: "🏍️",
-        models: {
-          petrol: ["FZ-S", "MT-15", "R15 V4", "Fascino", "Ray ZR", "Aerox 155"],
-        },
-      },
-      suzuki: {
-        name: "Suzuki",
-        logo: "🏍️",
-        models: {
-          petrol: [
-            "Gixxer",
-            "Access 125",
-            "Avenis",
-            "Burgman Street",
-            "Intruder",
-          ],
-        },
-      },
-    },
-  },
-};
+// Use vehicleData imported from '@/data/vehicle-data'
 
 const DynamicHero = () => {
   // Basic form states
@@ -525,24 +371,56 @@ const DynamicHero = () => {
 
   // Vehicle selection states
   const [showVehicleSelection, setShowVehicleSelection] = useState(false);
-  const [selectionStep, setSelectionStep] = useState<SelectionStep>("vehicle-type");
+  const [selectionStep, setSelectionStep] = useState<'vehicle-type' | 'fuel-type' | 'brand' | 'model'>("vehicle-type");
   const [selectedVehicleType, setSelectedVehicleType] = useState<VehicleType | ''>('');
   const [selectedFuelType, setSelectedFuelType] = useState<FuelType | ''>('');
-  const [selectedBrand, setSelectedBrand] = useState('');
+  const [selectedBrand, setSelectedBrand] = useState(''); // brand slug
   const [selectedModel, setSelectedModel] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
+  // Admin-controlled data from backend
+  interface BrandModel { name: string; fuels?: FuelType[] }
+  interface BrandApi { _id: string; type: VehicleType; name: string; slug: string; logo?: string; models: BrandModel[] }
+  const [brandsCar, setBrandsCar] = useState<BrandApi[]>([]);
+  const [brandsBike, setBrandsBike] = useState<BrandApi[]>([]);
+
   useEffect(() => {
-    // TODO: Replace with your API call
-    const mockHeroContent: HeroContent = {
-      title: "India's Leading",
-      subtitle: "Auto Service Network",
-      description: "Professional Car & Bike Services at your doorstep",
-      background_image_url: "/hero-banner.jpg",
-      cta_text: "GET FREE QUOTE"
+    const load = async () => {
+      try {
+        // Fetch hero CMS (keys optional; fallback to defaults)
+        const [t, st, d, bg, cta] = await Promise.all([
+          api.get<any>("/cms/hero.title"),
+          api.get<any>("/cms/hero.subtitle"),
+          api.get<any>("/cms/hero.description"),
+          api.get<any>("/cms/hero.background_image_url"),
+          api.get<any>("/cms/hero.cta_text"),
+        ]).then((arr) => arr.map((r) => (r && (r as any).data !== undefined ? (r as any).data : r)));
+
+        const content: HeroContent = {
+          title: (t as any) || "India's Leading",
+          subtitle: (st as any) || "Auto Service Network",
+          description: (d as any) || "Professional Car & Bike Services at your doorstep",
+          background_image_url: (bg as any) || "/hero-banner.jpg",
+          cta_text: (cta as any) || "GET FREE QUOTE",
+        };
+        setHeroContent(content);
+
+        // Fetch brands from backend
+        const [carsRes, bikesRes] = await Promise.all([
+          api.get<BrandApi[]>("/brands?type=car"),
+          api.get<BrandApi[]>("/brands?type=bike"),
+        ]);
+        const cars = (carsRes as any)?.data ?? carsRes;
+        const bikes = (bikesRes as any)?.data ?? bikesRes;
+        if (Array.isArray(cars)) setBrandsCar(cars);
+        if (Array.isArray(bikes)) setBrandsBike(bikes);
+      } catch (e) {
+        // Fallback to defaults from local vehicleData; heroContent already has defaults
+      } finally {
+        setLoading(false);
+      }
     };
-    setHeroContent(mockHeroContent);
-    setLoading(false);
+    load();
   }, []);
 
   const backgroundImage =
@@ -554,7 +432,7 @@ const DynamicHero = () => {
   };
 
   type SelectionStep = 'vehicle-type' | 'fuel-type' | 'brand' | 'model';
-  
+
   // Vehicle selection functions
   const resetVehicleSelection = () => {
     setSelectionStep('vehicle-type' as SelectionStep);
@@ -599,63 +477,71 @@ const DynamicHero = () => {
     setSelectionStep('brand');
   };
 
-  const handleBrandSelect = (brandKey: string) => {
-    setSelectedBrand(brandKey);
+  const handleBrandSelect = (brandSlug: string) => {
+    setSelectedBrand(brandSlug);
     setSelectionStep('model');
   };
 
   const handleModelSelect = (model: string) => {
     setSelectedModel(model);
     if (selectedVehicleType && selectedBrand) {
-      const brandData = vehicleData[selectedVehicleType].brands[selectedBrand];
+      const brandData = (selectedVehicleType === 'car' ? brandsCar : brandsBike).find(b => b.slug === selectedBrand);
       if (brandData) {
         setSelectedVehicle(`${brandData.name} ${model}`);
         setShowVehicleSelection(false);
         resetVehicleSelection();
+      } else {
+        // fallback to local data
+        const localBrand = (vehicleData as any)[selectedVehicleType]?.brands?.[selectedBrand];
+        if (localBrand) {
+          setSelectedVehicle(`${localBrand.name} ${model}`);
+          setShowVehicleSelection(false);
+          resetVehicleSelection();
+        }
       }
     }
   };
 
   const getAvailableBrands = () => {
-    if (!selectedVehicleType) return [];
-    
+    if (!selectedVehicleType) return [] as any[];
+    if (selectedVehicleType === 'bike') {
+      if (brandsBike.length) return brandsBike.map(b => [b.slug, { name: b.name, logo: b.logo || '🏍️', models: { petrol: (b.models || []).map(m => m.name) } }]);
+    } else {
+      if (brandsCar.length) return brandsCar.map(b => [b.slug, { name: b.name, logo: b.logo || '🚗', models: { petrol: (b.models||[]).filter(m => (m.fuels||[]).includes('petrol')).map(m=>m.name), diesel: (b.models||[]).filter(m => (m.fuels||[]).includes('diesel')).map(m=>m.name), cng: (b.models||[]).filter(m => (m.fuels||[]).includes('cng')).map(m=>m.name) } }]);
+    }
+    // fallback to local static data
     const vType = selectedVehicleType as VehicleType;
     const vehicleTypeData = vehicleData[vType];
-    if (!vehicleTypeData?.brands) return [];
-    
-    const brands = vehicleTypeData.brands;
-    
-    return Object.entries(brands).filter(([brandKey, brandData]) => {
-      if (vType === 'bike') {
-        return brandData.models.petrol?.length > 0;
-      }
-      if (!selectedFuelType) return true;
-      const fuelType = selectedFuelType as keyof typeof brandData.models;
-      return brandData.models[fuelType]?.length > 0;
-    });
+    if (!vehicleTypeData?.brands) return [] as any[];
+    return Object.entries(vehicleTypeData.brands);
   };
 
   const getAvailableModels = () => {
-    if (!selectedVehicleType || !selectedBrand) return [];
-    
+    if (!selectedVehicleType || !selectedBrand) return [] as string[];
+    if (selectedVehicleType === 'bike') {
+      const b = brandsBike.find(x => x.slug === selectedBrand);
+      if (b) return (b.models || []).map(m => m.name);
+    } else {
+      const b = brandsCar.find(x => x.slug === selectedBrand);
+      if (b) {
+        if (!selectedFuelType) return [] as string[];
+        const fuel = selectedFuelType as FuelType;
+        return (b.models || []).filter(m => (m.fuels || []).includes(fuel)).map(m => m.name);
+      }
+    }
+    // fallback to local
     const vType = selectedVehicleType as VehicleType;
-    const vehicleTypeData = vehicleData[vType] as VehicleTypeData;
-    const brands = vehicleTypeData?.brands || {};
-    
+    const brands = (vehicleData as any)[vType]?.brands || {};
     if (selectedBrand in brands) {
       const brandData = brands[selectedBrand];
-      
-      if (vType === 'bike') {
-        return brandData.models.petrol || [];
-      }
-      if (!selectedFuelType) return [];
-      const fuelType = selectedFuelType as FuelType;
-      return brandData.models[fuelType] || [];
+      if (vType === 'bike') return brandData.models.petrol || [];
+      if (!selectedFuelType) return [] as string[];
+      return brandData.models[selectedFuelType] || [];
     }
-    return [];
+    return [] as string[];
   };
 
-  const filteredBrands = getAvailableBrands().filter(([_, brandData]) => {
+  const filteredBrands = getAvailableBrands().filter(([, brandData]) => {
     const brand = brandData as { name: string };
     return brand.name.toLowerCase().includes(searchTerm.toLowerCase());
   });
@@ -765,12 +651,12 @@ const DynamicHero = () => {
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="bg-blue-500/20 p-2 rounded-lg">
-                    <MapPin className="h-5 w-5 text-blue-300" />
+                  <div className="bg-emerald-500/20 p-2 rounded-lg">
+                    <MapPin className="h-5 w-5 text-emerald-300" />
                   </div>
                   <div>
                     <div className="font-semibold text-white">500+ Centers</div>
-                    <div className="text-sm text-blue-200">Across India</div>
+                    <div className="text-sm text-emerald-200">Across India</div>
                   </div>
                 </div>
               </div>
@@ -959,12 +845,12 @@ const DynamicHero = () => {
 
                   <div className="grid grid-cols-2 gap-4">
                     <Card
-                      className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-blue-500"
+                      className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-emerald-500"
                       onClick={() => handleVehicleTypeSelect("bike")}
                     >
                       <CardContent className="p-4 text-center space-y-3">
-                        <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto">
-                          <Bike className="h-6 w-6 text-blue-600" />
+                        <div className="bg-emerald-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto">
+                          <Bike className="h-6 w-6 text-emerald-600" />
                         </div>
                         <div>
                           <h4 className="font-medium">Bike</h4>
@@ -974,12 +860,12 @@ const DynamicHero = () => {
                     </Card>
 
                     <Card
-                      className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-green-500"
+                      className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-orange-500"
                       onClick={() => handleVehicleTypeSelect("car")}
                     >
                       <CardContent className="p-4 text-center space-y-3">
-                        <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto">
-                          <Car className="h-6 w-6 text-green-600" />
+                        <div className="bg-orange-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto">
+                          <Car className="h-6 w-6 text-orange-600" />
                         </div>
                         <div>
                           <h4 className="font-medium">Car</h4>
@@ -1061,8 +947,7 @@ const DynamicHero = () => {
                           </CardContent>
                         </Card>
 
-                        <Card
-                          className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-green-500"
+                        <Card className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-green-500"
                           onClick={() => handleFuelTypeSelect("cng")}
                         >
                           <CardContent className="p-4 text-center space-y-3">
@@ -1132,7 +1017,7 @@ const DynamicHero = () => {
                     {filteredModels.map((model: string) => (
                       <Card
                         key={model}
-                        className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-blue-500"
+                        className="cursor-pointer hover:shadow-lg transition-shadow border-2 hover:border-orange-500"
                         onClick={() => handleModelSelect(model)}
                       >
                         <CardContent className="p-3 text-center space-y-2">

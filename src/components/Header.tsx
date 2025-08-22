@@ -1,5 +1,3 @@
-import logo from "@/assets/logo.jpg"; // Import the logo file (JPG format)
-
 import { Button } from "./ui/button";
 import wheelyfixLogo from "../assets/logo.jpg"; // Import the Wheelyfix logo
 import { useAuth } from "../hooks/useAuth";
@@ -7,7 +5,7 @@ import { useUserRole } from "../hooks/useUserRole";
 import { Link, useNavigate } from "react-router-dom";
 import { LogOut, User, Menu, X, Phone, MapPin, Download } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 
 const Header = () => {
@@ -18,7 +16,7 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
 
   // Handle scroll effect
-  useState(() => {
+  useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
@@ -74,6 +72,15 @@ const Header = () => {
                     {item.name}
                   </Link>
                 ))}
+                {user && (
+                  <Link
+                    to="/dashboard"
+                    className="block text-lg font-medium text-gray-900 hover:text-accent transition-colors"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Dashboard
+                  </Link>
+                )}
                 {isAdmin && (
                   <Link
                     to="/admin"
@@ -188,6 +195,17 @@ const Header = () => {
                 </Button>
               </Link>
             ))}
+            {user && (
+              <Link to="/dashboard">
+                <Button 
+                  variant="ghost" 
+                  className="text-gray-700 hover:text-primary-600 font-medium relative group px-4"
+                >
+                  Dashboard
+                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+                </Button>
+              </Link>
+            )}
             {isAdmin && (
               <Link to="/admin">
                 <Button 
@@ -217,16 +235,15 @@ const Header = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56 p-2">
-                  <DropdownMenuItem 
-                    onClick={() => navigate("/profile")}
-                    className="rounded-lg hover:bg-primary-50 cursor-pointer py-2"
-                  >
-                    <User className="h-4 w-4 mr-2 text-primary-600" />
-                    <span>Profile</span>
+                  <DropdownMenuItem asChild className="rounded-lg hover:bg-primary-50 cursor-pointer py-2">
+                    <Link to="/profile" className="flex items-center w-full">
+                      <User className="h-4 w-4 mr-2 text-primary-600" />
+                      <span>Profile</span>
+                    </Link>
                   </DropdownMenuItem>
                   {isAdmin && (
                     <DropdownMenuItem 
-                      onClick={() => navigate("/admin")}
+                      onSelect={() => navigate("/admin")}
                       className="rounded-lg hover:bg-primary-50 cursor-pointer py-2"
                     >
                       <span className="flex items-center">
@@ -239,7 +256,7 @@ const Header = () => {
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuItem 
-                    onClick={signOut}
+                    onClick={() => { signOut(); navigate('/login'); }}
                     className="rounded-lg hover:bg-red-50 cursor-pointer py-2 mt-1 text-red-600 hover:text-red-700"
                   >
                     <LogOut className="h-4 w-4 mr-2" />

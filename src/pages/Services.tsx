@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Car, Bike, Clock, Shield, Zap, Users } from "lucide-react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { useAuth } from "@/hooks/useAuth"
 
 const Services = () => {
   const services = [
@@ -56,6 +57,19 @@ const Services = () => {
       description: "Round-the-clock customer assistance"
     }
   ]
+
+  const navigate = useNavigate()
+  const { user } = useAuth()
+
+  const handleBookNow = (serviceName: string) => {
+    if (!user) {
+      // Store intended path for post-login redirection
+      localStorage.setItem('redirectAfterLoginPath', '/booking')
+      navigate('/login', { state: { from: '/booking', serviceType: serviceName } })
+      return
+    }
+    navigate('/booking', { state: { serviceType: serviceName } })
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -127,7 +141,7 @@ const Services = () => {
                       <CardContent className="pt-0">
                         <p className="text-gray-600 mb-6 leading-relaxed">{service.description}</p>
                         <div className="space-y-3">
-                          <Button className="w-full bg-accent hover:bg-accent/90">
+                          <Button className="w-full bg-accent hover:bg-accent/90" onClick={() => handleBookNow(service.name)}>
                             Book Now
                           </Button>
                           <Button variant="outline" className="w-full border-accent text-accent hover:bg-accent hover:text-white">

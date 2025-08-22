@@ -29,43 +29,119 @@ const DynamicServices = () => {
   const [activeTab, setActiveTab] = useState("All");
   const [vehicleTab, setVehicleTab] = useState<'Two Wheeler' | 'Four Wheeler'>('Two Wheeler');
 
-  // Service data for demo (add more as needed)
+  // Updated service data with better HD automotive images - each service has a unique image
   const twoWheelerServices = [
-    { name: 'Suspension', image: 'https://images.unsplash.com/photo-1542362567-b07e54358753?w=200&h=200&fit=crop&crop=center', color: 'blue' },
-    { name: 'Clutch', image: 'https://images.unsplash.com/photo-1486006920555-c77dcf18193c?w=200&h=200&fit=crop&crop=center', color: 'green' },
-    { name: 'Tyre Service', image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=200&fit=crop&crop=center', color: 'orange' },
-    { name: 'Electricals Services', image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=200&h=200&fit=crop&crop=center', color: 'yellow' },
-    { name: 'Body Parts', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=200&fit=crop&crop=center', color: 'purple' },
-    { name: 'Engines & Carburetor', image: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=200&h=200&fit=crop&crop=center', color: 'red' },
-    { name: 'Service & Repair', image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=200&h=200&fit=crop&crop=center', color: 'indigo' },
-    { name: 'Transmission', image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=200&h=200&fit=crop&crop=center', color: 'teal' },
-    { name: 'Fitments', image: 'https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?w=200&h=200&fit=crop&crop=center', color: 'pink' },
+    { 
+      name: 'Suspension', 
+      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop&crop=center&q=80', 
+      color: 'emerald' 
+    },
+    { 
+      name: 'Clutch', 
+      image: 'https://images.unsplash.com/photo-1486006920555-c77dcf18193c?w=400&h=400&fit=crop&crop=center&q=80', 
+      color: 'green' 
+    },
+    { 
+      name: 'Tyre Service', 
+      image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=400&fit=crop&crop=center&q=80', 
+      color: 'orange' 
+    },
+    { 
+      name: 'Electricals Services', 
+      image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&h=400&fit=crop&crop=center&q=80', 
+      color: 'yellow' 
+    },
+    { 
+      name: 'Body Parts', 
+      image: 'https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=400&h=400&fit=crop&crop=center&q=80', 
+      color: 'purple' 
+    },
+    { 
+      name: 'Engines & Carburetor', 
+      image: 'https://images.unsplash.com/photo-1487754180451-c456f719a1fc?w=400&h=400&fit=crop&crop=center&q=80', 
+      color: 'red' 
+    },
+    { 
+      name: 'Service & Repair', 
+      image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=400&h=400&fit=crop&crop=center&q=80', 
+      color: 'indigo' 
+    },
+    { 
+      name: 'Transmission', 
+      image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=400&h=400&fit=crop&crop=center&q=80', 
+      color: 'teal' 
+    },
+    { 
+      name: 'Fitments', 
+      image: 'https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?w=400&h=400&fit=crop&crop=center&q=80', 
+      color: 'pink' 
+    },
   ];
+  
   const fourWheelerServices = [
-    { name: 'Car Services', image: 'https://images.unsplash.com/photo-1542362567-b07e54358753?w=200&h=200&fit=crop&crop=center', color: 'blue' },
-    { name: 'AC Service & Repair', image: 'https://images.unsplash.com/photo-1486006920555-c77dcf18193c?w=200&h=200&fit=crop&crop=center', color: 'cyan' },
-    { name: 'Batteries', image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=200&fit=crop&crop=center', color: 'yellow' },
-    { name: 'Tyres & Wheel Care', image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=200&h=200&fit=crop&crop=center', color: 'orange' },
-    { name: 'Denting & Painting', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=200&fit=crop&crop=center', color: 'red' },
-    { name: 'Detailing Services', image: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=200&h=200&fit=crop&crop=center', color: 'purple' },
-    { name: 'Car Spa & Cleaning', image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=200&h=200&fit=crop&crop=center', color: 'green' },
-    { name: 'Car Inspections', image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=200&h=200&fit=crop&crop=center', color: 'indigo' },
-    { name: 'Windshields & Lights', image: 'https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?w=200&h=200&fit=crop&crop=center', color: 'amber' },
-    { name: 'Suspension & Fitments', image: 'https://images.unsplash.com/photo-1542362567-b07e54358753?w=200&h=200&fit=crop&crop=center', color: 'teal' },
-    { name: 'Insurance Claims', image: 'https://images.unsplash.com/photo-1486006920555-c77dcf18193c?w=200&h=200&fit=crop&crop=center', color: 'emerald' },
+    { 
+      name: 'Car Services', 
+      image: 'https://images.unsplash.com/photo-1542362567-b07e54358753?w=400&h=400&fit=crop&crop=center&q=80', 
+      color: 'emerald' 
+    },
+    { 
+      name: 'AC Service & Repair', 
+      image: 'https://images.unsplash.com/photo-1486006920555-c77dcf18193c?w=400&h=400&fit=crop&crop=center&q=80', 
+      color: 'cyan' 
+    },
+    { 
+      name: 'Batteries', 
+      image: 'https://images.unsplash.com/photo-1593941707882-a5bac6861d75?w=400&h=400&fit=crop&crop=center&q=80', 
+      color: 'yellow' 
+    },
+    { 
+      name: 'Tyres & Wheel Care', 
+      image: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=400&fit=crop&crop=center&q=80', 
+      color: 'orange' 
+    },
+    { 
+      name: 'Denting & Painting', 
+      image: 'https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=400&h=400&fit=crop&crop=center&q=80', 
+      color: 'red' 
+    },
+    { 
+      name: 'Detailing Services', 
+      image: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=400&h=400&fit=crop&crop=center&q=80', 
+      color: 'purple' 
+    },
+    { 
+      name: 'Car Spa & Cleaning', 
+      image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=400&h=400&fit=crop&crop=center&q=80', 
+      color: 'green' 
+    },
+    { 
+      name: 'Car Inspections', 
+      image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=400&h=400&fit=crop&crop=center&q=80', 
+      color: 'indigo' 
+    },
+    { 
+      name: 'Windshields & Lights', 
+      image: 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=400&h=400&fit=crop&crop=center&q=80', 
+      color: 'amber' 
+    },
+    { 
+      name: 'Suspension & Fitments', 
+      image: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=400&fit=crop&crop=center&q=80', 
+      color: 'teal' 
+    },
+    { 
+      name: 'Insurance Claims', 
+      image: 'https://images.unsplash.com/photo-1571068316344-75bc76f77890?w=400&h=400&fit=crop&crop=center&q=80', 
+      color: 'emerald' 
+    },
   ];
 
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const { data, error } = await supabase
-          .from('services')
-          .select('*')
-          .eq('is_active', true)
-          .order('created_at', { ascending: true });
-
-        if (error) throw error;
-        setServices(data || []);
+        const raw = localStorage.getItem('services');
+        const data = raw ? JSON.parse(raw) : [];
+        setServices(data);
       } catch (error) {
         console.error('Error fetching services:', error);
       } finally {
@@ -208,7 +284,7 @@ const DynamicServices = () => {
 
   const getColorClasses = (color: string) => {
     const colorMap: { [key: string]: { bg: string; border: string; hover: string } } = {
-      'blue': { bg: 'bg-blue-50', border: 'border-blue-200', hover: 'hover:bg-blue-100' },
+      'emerald': { bg: 'bg-emerald-50', border: 'border-emerald-200', hover: 'hover:bg-emerald-100' },
       'green': { bg: 'bg-green-50', border: 'border-green-200', hover: 'hover:bg-green-100' },
       'orange': { bg: 'bg-orange-50', border: 'border-orange-200', hover: 'hover:bg-orange-100' },
       'yellow': { bg: 'bg-yellow-50', border: 'border-yellow-200', hover: 'hover:bg-yellow-100' },
@@ -219,9 +295,8 @@ const DynamicServices = () => {
       'cyan': { bg: 'bg-cyan-50', border: 'border-cyan-200', hover: 'hover:bg-cyan-100' },
       'pink': { bg: 'bg-pink-50', border: 'border-pink-200', hover: 'hover:bg-pink-100' },
       'amber': { bg: 'bg-amber-50', border: 'border-amber-200', hover: 'hover:bg-amber-100' },
-      'emerald': { bg: 'bg-emerald-50', border: 'border-emerald-200', hover: 'hover:bg-emerald-100' },
     };
-    return colorMap[color] || colorMap['blue'];
+    return colorMap[color] || colorMap['emerald'];
   };
 
   return (
@@ -252,16 +327,16 @@ const DynamicServices = () => {
         </div>
         {/* Horizontal Scrollable Service Cards */}
         <div className="overflow-x-auto pb-4">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 min-w-max">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 min-w-max">
             {(vehicleTab === 'Two Wheeler' ? twoWheelerServices : fourWheelerServices).map((service, idx) => {
               const colorClasses = getColorClasses(service.color);
               return (
-                <div key={idx} className={`flex flex-col items-center bg-white rounded-lg border-2 ${colorClasses.border} p-6 min-w-[160px] max-w-[180px] mx-2 shadow-sm hover:shadow-md transition-all duration-200 ${colorClasses.hover}`}>
-                  <div className={`w-16 h-16 flex items-center justify-center mb-4 ${colorClasses.bg} rounded-lg overflow-hidden`}>
+                <div key={idx} className={`flex flex-col items-center bg-white rounded-xl border-2 ${colorClasses.border} p-6 min-w-[180px] max-w-[200px] mx-2 shadow-lg hover:shadow-xl transition-all duration-300 ${colorClasses.hover} hover:-translate-y-1`}>
+                  <div className={`w-20 h-20 flex items-center justify-center mb-4 ${colorClasses.bg} rounded-xl overflow-hidden`}>
                     <img 
                       src={service.image} 
                       alt={service.name}
-                      className="w-full h-full object-cover rounded-lg"
+                      className="w-full h-full object-cover rounded-xl"
                       loading="lazy"
                     />
                   </div>
@@ -291,8 +366,8 @@ const DynamicServices = () => {
             <p className="text-gray-600 text-sm">Quick turnaround time</p>
           </div>
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mb-4">
-              <MapPin className="h-6 w-6 text-blue-600" />
+            <div className="inline-flex items-center justify-center w-12 h-12 bg-emerald-100 rounded-full mb-4">
+              <MapPin className="h-6 w-6 text-emerald-600" />
             </div>
             <h3 className="font-semibold text-gray-900 mb-2">Free Pickup & Drop</h3>
             <p className="text-gray-600 text-sm">At your doorstep</p>

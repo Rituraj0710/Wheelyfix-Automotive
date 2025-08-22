@@ -3,9 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-// import { supabase } from '@/integrations/supabase/client';
+// Supabase removed. Use localStorage for demo persistence.
 import { useToast } from '@/hooks/use-toast';
 import { Shield, ShieldCheck, User } from 'lucide-react';
+import { api } from '@/lib/api';
 
 interface UserProfile {
   id: string;
@@ -27,20 +28,12 @@ const AdminUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setUsers(data || []);
+      const res = await api.get<UserProfile[]>('/users');
+      if (res.data) setUsers(res.data);
+      if (res.error) throw new Error(res.error);
     } catch (error) {
       console.error('Error fetching users:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load users",
-        variant: "destructive",
-      });
+      toast({ title: 'Error', description: 'Failed to load users', variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -48,26 +41,12 @@ const AdminUsers = () => {
 
   const updateUserRole = async (userId: string, newRole: 'admin' | 'user') => {
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ role: newRole })
-        .eq('id', userId);
-
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: `User role updated to ${newRole}`,
-      });
-
+      await api.put(`/users/${userId}/role`, { isAdmin: newRole === 'admin' });
+      toast({ title: 'Success', description: `User role updated to ${newRole}` });
       fetchUsers();
     } catch (error) {
       console.error('Error updating user role:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update user role",
-        variant: "destructive",
-      });
+      toast({ title: 'Error', description: 'Failed to update user role', variant: 'destructive' });
     }
   };
 

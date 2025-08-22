@@ -17,6 +17,8 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import NotFound from './pages/NotFound';
 import Dashboard from './pages/Dashboard';
+import VehicleServicesParts from './pages/VehicleServicesParts';
+import Profile from './pages/Profile';
 
 // Service Pages
 import GeneralService from './pages/services/GeneralService';
@@ -42,6 +44,7 @@ function App() {
             <Route path="/signin" element={<SignIn />} />
             <Route path="/register" element={<Register />} />
             <Route path="/services" element={<Services />} />
+            <Route path="/vehicle-services-parts" element={<VehicleServicesParts />} />
             <Route path="/booking" element={<ProtectedRoute><Booking /></ProtectedRoute>} />
             <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
             <Route path="/blogs" element={<Blogs />} />
@@ -49,6 +52,7 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             
             {/* Service Routes */}
             <Route path="/services/general-service" element={<GeneralService />} />

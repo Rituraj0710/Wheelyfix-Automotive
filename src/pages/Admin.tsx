@@ -1,9 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
   Settings, 
@@ -15,11 +14,16 @@ import {
   Shield,
   BarChart
 } from 'lucide-react';
+import { api } from '@/lib/api';
 import AdminHeroContent from '@/components/admin/AdminHeroContent';
 import AdminServices from '@/components/admin/AdminServices';
 import AdminCategories from '@/components/admin/AdminCategories';
 import AdminBlogPosts from '@/components/admin/AdminBlogPosts';
 import AdminUsers from '@/components/admin/AdminUsers';
+import AdminAnalytics from '@/components/admin/AdminAnalytics';
+import AdminSettings from '@/components/admin/AdminSettings';
+import AdminBookings from '@/components/admin/AdminBookings';
+import AdminPayments from '@/components/admin/AdminPayments';
 
 const Admin = () => {
   const { isAdmin, loading } = useUserRole();
@@ -58,45 +62,18 @@ const Admin = () => {
           </Badge>
         </div>
 
-        {/* Quick Stats */}
+        {/* Quick Stats (live) */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">24</div>
-              <p className="text-xs text-muted-foreground">+2 from last month</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Services</CardTitle>
-              <Car className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">6</div>
-              <p className="text-xs text-muted-foreground">All systems operational</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Blog Posts</CardTitle>
-              <BookOpen className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground">Ready to publish</p>
-            </CardContent>
-          </Card>
+          <StatsCard title="Total Users" icon={<Users className="h-4 w-4 text-muted-foreground" />} endpoint="/users" />
+          <StatsCard title="Active Services" icon={<Car className="h-4 w-4 text-muted-foreground" />} endpoint="/services" />
+          <StatsCard title="Payments" icon={<BookOpen className="h-4 w-4 text-muted-foreground" />} endpoint="/payments" />
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Categories</CardTitle>
               <Grid className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">10</div>
+              <div className="text-2xl font-bold">—</div>
               <p className="text-xs text-muted-foreground">Product categories</p>
             </CardContent>
           </Card>
@@ -104,7 +81,7 @@ const Admin = () => {
 
         {/* Main Content */}
         <Tabs defaultValue="hero" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-9">
             <TabsTrigger value="hero" className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
               Hero Content
@@ -124,6 +101,22 @@ const Admin = () => {
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
               Users
+            </TabsTrigger>
+            <TabsTrigger value="bookings" className="flex items-center gap-2">
+              <BarChart className="h-4 w-4" />
+              Bookings
+            </TabsTrigger>
+            <TabsTrigger value="payments" className="flex items-center gap-2">
+              <BarChart className="h-4 w-4" />
+              Payments
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="flex items-center gap-2">
+              <BarChart className="h-4 w-4" />
+              Analytics
+            </TabsTrigger>
+            <TabsTrigger value="settings" className="flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              Settings
             </TabsTrigger>
           </TabsList>
 
@@ -146,6 +139,22 @@ const Admin = () => {
           <TabsContent value="users">
             <AdminUsers />
           </TabsContent>
+
+          <TabsContent value="bookings">
+            <AdminBookings />
+          </TabsContent>
+
+          <TabsContent value="payments">
+            <AdminPayments />
+          </TabsContent>
+
+          <TabsContent value="analytics">
+            <AdminAnalytics />
+          </TabsContent>
+
+          <TabsContent value="settings">
+            <AdminSettings />
+          </TabsContent>
         </Tabs>
       </div>
     </div>
@@ -153,3 +162,29 @@ const Admin = () => {
 };
 
 export default Admin;
+
+function StatsCard({ title, icon, endpoint }: { title: string; icon: React.ReactNode; endpoint: string }) {
+  const [count, setCount] = useState<string>('—');
+  useEffect(() => {
+    let mounted = true;
+    api.get<any>(endpoint).then((res) => {
+      if (!mounted) return;
+      const len = Array.isArray(res.data) ? res.data.length : undefined;
+      setCount(len !== undefined ? String(len) : '—');
+    }).catch(() => setCount('—'));
+    return () => { mounted = false; };
+  }, [endpoint]);
+
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+        {icon}
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold">{count}</div>
+        <p className="text-xs text-muted-foreground">Live</p>
+      </CardContent>
+    </Card>
+  );
+}

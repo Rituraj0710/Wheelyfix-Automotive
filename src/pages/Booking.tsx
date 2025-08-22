@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -13,8 +13,14 @@ import { CalendarIcon } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
+import { useLocation, useNavigate } from "react-router-dom"
+import { useAuth } from "@/hooks/useAuth"
+import { api } from "@/lib/api"
 
 const Booking = () => {
+  const location = useLocation() as { state?: any }
+  const navigate = useNavigate()
+  const { user } = useAuth()
   const [date, setDate] = useState<Date>()
   const [formData, setFormData] = useState({
     name: "",
@@ -30,13 +36,46 @@ const Booking = () => {
   
   const { toast } = useToast()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Prefill from auth and navigation state
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      name: prev.name || user?.name || "",
+      email: prev.email || user?.email || "",
+      serviceType: location.state?.serviceType || prev.serviceType,
+    }))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Here you would typically send the data to your backend
-    toast({
-      title: "Booking Confirmed!",
-      description: "We'll contact you soon to confirm your appointment.",
-    })
+    if (!date || !formData.timeSlot) {
+      toast({ title: "Missing details", description: "Please select a date and time slot.", variant: "destructive" })
+      return
+    }
+
+    try {
+      const payload = {
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        vehicleType: formData.vehicleType,
+        vehicleModel: formData.vehicleModel,
+        serviceType: formData.serviceType,
+        date: date.toISOString(),
+        timeSlot: formData.timeSlot,
+        address: formData.address,
+        notes: formData.notes,
+      }
+      const created = await api.authPost<any>('/bookings', payload)
+      toast({
+        title: "Booking Confirmed!",
+        description: `Reference: ${String(created._id).slice(-8).toUpperCase()}`,
+      })
+      navigate('/dashboard')
+    } catch (err: any) {
+      toast({ title: 'Booking failed', description: err?.message || 'Please try again', variant: 'destructive' })
+    }
   }
 
   const handleInputChange = (field: string, value: string) => {

@@ -31,21 +31,12 @@ const AdminHeroContent = () => {
 
   const fetchHeroContent = async () => {
     try {
-      const { data, error } = await supabase
-        .from('hero_content')
-        .select('*')
-        .eq('is_active', true)
-        .single();
-
-      if (error && error.code !== 'PGRST116') throw error;
+      const raw = localStorage.getItem('hero_content');
+      const data: HeroContent | null = raw ? JSON.parse(raw) : null;
       setHeroContent(data);
     } catch (error) {
       console.error('Error fetching hero content:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load hero content",
-        variant: "destructive",
-      });
+      toast({ title: 'Error', description: 'Failed to load hero content', variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -56,26 +47,11 @@ const AdminHeroContent = () => {
     setSaving(true);
 
     try {
-      const { error } = await supabase
-        .from('hero_content')
-        .upsert({
-          ...heroContent,
-          updated_at: new Date().toISOString(),
-        });
-
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "Hero content updated successfully",
-      });
+      localStorage.setItem('hero_content', JSON.stringify(heroContent));
+      toast({ title: 'Success', description: 'Hero content updated successfully' });
     } catch (error) {
       console.error('Error saving hero content:', error);
-      toast({
-        title: "Error",
-        description: "Failed to save hero content",
-        variant: "destructive",
-      });
+      toast({ title: 'Error', description: 'Failed to save hero content', variant: 'destructive' });
     } finally {
       setSaving(false);
     }

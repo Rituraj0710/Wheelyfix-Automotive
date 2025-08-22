@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, ChangeEvent, FormEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CheckCircle, ChevronLeft, ChevronRight, User, Mail, Lock, Phone, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
+import { authService } from "@/services/authService";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -32,14 +33,14 @@ export default function Register() {
     { number: 3, title: "Security" },
   ];
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     // normalize inputs a bit
     const next = name === "email" ? value.trim().toLowerCase() : value;
     setFormData((prev) => ({ ...prev, [name]: next }));
   };
 
-  const validateStep = (step) => {
+  const validateStep = (step: number): boolean => {
     // mirror backend rules per step
     if (step === 1) {
       if (!formData.firstName.trim() || !formData.lastName.trim()) {
@@ -87,7 +88,7 @@ export default function Register() {
     if (currentStep > 1) setCurrentStep((prev) => prev - 1);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!validateStep(3)) return;
     setError("");
@@ -110,30 +111,12 @@ export default function Register() {
         vehicles: [],
       };
 
-      // Get the backend URL from environment variables or use a default
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
-
-      // Direct API call to backend
-      const response = await fetch(`${backendUrl}/api/users`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Registration failed');
-      }
-
-      // Registration successful
-      console.log('User registered successfully:', data);
+      // Use axios client via Vite proxy for consistent network behavior
+      await authService.registerFull(payload);
       navigate("/login");
     } catch (err) {
       // Handle error messages from server or network
-      const msg = err?.message || "Registration failed. Please try again.";
+      const msg = (err as any)?.message || "Registration failed. Please try again.";
       setError(msg);
       console.error('Registration error:', err);
     } finally {

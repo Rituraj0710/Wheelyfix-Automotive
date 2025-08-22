@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-// import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { Plus, Edit, Trash2, Save, Eye } from 'lucide-react';
@@ -38,20 +37,12 @@ const AdminBlogPosts = () => {
 
   const fetchBlogPosts = async () => {
     try {
-      const { data, error } = await supabase
-        .from('blog_posts')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setBlogPosts(data || []);
+      const raw = localStorage.getItem('blog_posts');
+      const data = raw ? (JSON.parse(raw) as BlogPost[]) : [];
+      setBlogPosts(data.sort((a,b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()));
     } catch (error) {
       console.error('Error fetching blog posts:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load blog posts",
-        variant: "destructive",
-      });
+      toast({ title: 'Error', description: 'Failed to load blog posts', variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -72,85 +63,36 @@ const AdminBlogPosts = () => {
     const slug = generateSlug(editingPost.title);
     
     try {
-      // Get user profile for author_id
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('user_id', user.id)
-        .single();
-
+      const raw = localStorage.getItem('blog_posts');
+      const list: BlogPost[] = raw ? JSON.parse(raw) : [];
       if (editingPost.id.startsWith('new-')) {
-        const { error } = await supabase
-          .from('blog_posts')
-          .insert([{
-            title: editingPost.title,
-            slug,
-            excerpt: editingPost.excerpt,
-            content: editingPost.content,
-            featured_image_url: editingPost.featured_image_url,
-            is_published: editingPost.is_published,
-            tags: editingPost.tags,
-            author_id: profile?.id,
-          }]);
-
-        if (error) throw error;
+        list.unshift({ ...editingPost, id: crypto.randomUUID(), created_at: new Date().toISOString() });
       } else {
-        const { error } = await supabase
-          .from('blog_posts')
-          .update({
-            title: editingPost.title,
-            slug,
-            excerpt: editingPost.excerpt,
-            content: editingPost.content,
-            featured_image_url: editingPost.featured_image_url,
-            is_published: editingPost.is_published,
-            tags: editingPost.tags,
-          })
-          .eq('id', editingPost.id);
-
-        if (error) throw error;
+        const idx = list.findIndex(p => p.id === editingPost.id);
+        if (idx !== -1) list[idx] = { ...editingPost };
       }
-
-      toast({
-        title: "Success",
-        description: "Blog post saved successfully",
-      });
-
+      localStorage.setItem('blog_posts', JSON.stringify(list));
+      toast({ title: 'Success', description: 'Blog post saved successfully' });
       setIsDialogOpen(false);
       setEditingPost(null);
       fetchBlogPosts();
     } catch (error) {
       console.error('Error saving blog post:', error);
-      toast({
-        title: "Error",
-        description: "Failed to save blog post",
-        variant: "destructive",
-      });
+      toast({ title: 'Error', description: 'Failed to save blog post', variant: 'destructive' });
     }
   };
 
   const handleDelete = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('blog_posts')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "Blog post deleted successfully",
-      });
-
+      const raw = localStorage.getItem('blog_posts');
+      const list: BlogPost[] = raw ? JSON.parse(raw) : [];
+      const next = list.filter(p => p.id !== id);
+      localStorage.setItem('blog_posts', JSON.stringify(next));
+      toast({ title: 'Success', description: 'Blog post deleted successfully' });
       fetchBlogPosts();
     } catch (error) {
       console.error('Error deleting blog post:', error);
-      toast({
-        title: "Error",
-        description: "Failed to delete blog post",
-        variant: "destructive",
-      });
+      toast({ title: 'Error', description: 'Failed to delete blog post', variant: 'destructive' });
     }
   };
 

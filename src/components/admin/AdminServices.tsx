@@ -10,15 +10,17 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 // import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Edit, Trash2, Save } from 'lucide-react';
+import { api } from '@/lib/api';
 
 interface Service {
-  id: string;
+  _id?: string;
+  id?: string; // backward compat for local items
   name: string;
   description: string;
   icon: string;
   price: number;
-  duration_minutes: number;
-  is_active: boolean;
+  duration_minutes: number; // UI field name
+  is_active: boolean; // UI field name
   category: string;
 }
 
@@ -35,20 +37,12 @@ const AdminServices = () => {
 
   const fetchServices = async () => {
     try {
-      const { data, error } = await supabase
-        .from('services')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setServices(data || []);
+      const res = await api.get<Service[]>('/services');
+      if (res.data) setServices(res.data);
+      if (res.error) throw new Error(res.error);
     } catch (error) {
       console.error('Error fetching services:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load services",
-        variant: "destructive",
-      });
+      toast({ title: 'Error', description: 'Failed to load services', variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -58,79 +52,46 @@ const AdminServices = () => {
     if (!editingService) return;
 
     try {
-      if (editingService.id.startsWith('new-')) {
-        // Create new service
-        const { error } = await supabase
-          .from('services')
-          .insert([{
-            name: editingService.name,
-            description: editingService.description,
-            icon: editingService.icon,
-            price: editingService.price,
-            duration_minutes: editingService.duration_minutes,
-            is_active: editingService.is_active,
-            category: editingService.category,
-          }]);
-
-        if (error) throw error;
+      const svcId = editingService._id || editingService.id;
+      if (!svcId || String(svcId).startsWith('new-')) {
+        await api.authPost<Service>('/services', {
+          name: editingService.name,
+          description: editingService.description,
+          icon: editingService.icon,
+          price: editingService.price,
+          durationMinutes: editingService.duration_minutes,
+          isActive: editingService.is_active,
+          category: editingService.category,
+        });
       } else {
-        // Update existing service
-        const { error } = await supabase
-          .from('services')
-          .update({
-            name: editingService.name,
-            description: editingService.description,
-            icon: editingService.icon,
-            price: editingService.price,
-            duration_minutes: editingService.duration_minutes,
-            is_active: editingService.is_active,
-            category: editingService.category,
-          })
-          .eq('id', editingService.id);
-
-        if (error) throw error;
+        await api.put<Service>(`/services/${svcId}`, {
+          name: editingService.name,
+          description: editingService.description,
+          icon: editingService.icon,
+          price: editingService.price,
+          durationMinutes: editingService.duration_minutes,
+          isActive: editingService.is_active,
+          category: editingService.category,
+        });
       }
-
-      toast({
-        title: "Success",
-        description: "Service saved successfully",
-      });
-
+      toast({ title: 'Success', description: 'Service saved successfully' });
       setIsDialogOpen(false);
       setEditingService(null);
       fetchServices();
     } catch (error) {
       console.error('Error saving service:', error);
-      toast({
-        title: "Error",
-        description: "Failed to save service",
-        variant: "destructive",
-      });
+      toast({ title: 'Error', description: 'Failed to save service', variant: 'destructive' });
     }
   };
 
   const handleDelete = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('services')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "Service deleted successfully",
-      });
-
+      await api.delete(`/services/${id}`);
+      toast({ title: 'Success', description: 'Service deleted successfully' });
       fetchServices();
     } catch (error) {
       console.error('Error deleting service:', error);
-      toast({
-        title: "Error",
-        description: "Failed to delete service",
-        variant: "destructive",
-      });
+      toast({ title: 'Error', description: 'Failed to delete service', variant: 'destructive' });
     }
   };
 
@@ -270,7 +231,7 @@ const AdminServices = () => {
                   <Button variant="outline" size="sm" onClick={() => openEditDialog(service)}>
                     <Edit className="h-4 w-4" />
                   </Button>
-                  <Button variant="destructive" size="sm" onClick={() => handleDelete(service.id)}>
+                  <Button variant="destructive" size="sm" onClick={() => handleDelete((service as any)._id || service.id!)}>
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>

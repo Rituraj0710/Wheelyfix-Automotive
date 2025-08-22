@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -7,6 +8,11 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Minus, Plus, Trash2 } from "lucide-react"
+import { toast } from "@/components/ui/use-toast"
+
+declare global {
+  interface Window { Razorpay?: any }
+}
 
 interface CartItem {
   id: string
@@ -66,16 +72,100 @@ const Cart = () => {
   const tax = Math.round(subtotal * 0.18)
   const total = subtotal + shipping + tax
 
+  const navigate = useNavigate()
+
+  const [paymentsEnabled, setPaymentsEnabled] = useState<boolean>(false)
+
+  // Check payment config on mount to decide visibility/enabled state of Pay Now
+  useEffect(() => {
+    fetch('/api/payments/config')
+      .then(r => r.json())
+      .then(d => setPaymentsEnabled(Boolean(d?.enabled)))
+      .catch(() => setPaymentsEnabled(false))
+  }, [])
+
+  const loadRazorpay = () =>
+    new Promise<boolean>((resolve) => {
+      if (window.Razorpay) return resolve(true)
+      const script = document.createElement('script')
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js'
+      script.onload = () => resolve(true)
+      script.onerror = () => resolve(false)
+      document.body.appendChild(script)
+    })
+
+  const handlePayment = async () => {
+    const ok = await loadRazorpay()
+    if (!ok) {
+      toast({ title: 'Payment error', description: 'Failed to load payment SDK', variant: 'destructive' })
+      return
+    }
+
+    try {
+      // Create order on backend (amount in paise)
+      const orderResp = await fetch('/api/payments/create-order', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+        },
+        credentials: 'include',
+        body: JSON.stringify({ amount: total * 100 }),
+      })
+      const orderData = await orderResp.json()
+      if (!orderResp.ok) throw new Error(orderData?.message || 'Unable to create order')
+
+      const options = {
+        key: orderData.keyId,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: 'Wheelyfix',
+        description: 'Parts and Services',
+        order_id: orderData.orderId,
+        handler: async function (response: any) {
+          try {
+            const verifyResp = await fetch('/api/payments/verify', {
+              method: 'POST',
+              headers: { 
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+              },
+              credentials: 'include',
+              body: JSON.stringify(response),
+            })
+            if (!verifyResp.ok) throw new Error('Verification failed')
+            toast({ title: 'Payment successful', description: 'Thank you! Your order has been placed.' })
+          } catch (e) {
+            toast({ title: 'Verification error', description: (e as any).message, variant: 'destructive' })
+          }
+        },
+        theme: { color: '#fb923c' },
+        prefill: {},
+      }
+
+      const rzp = new (window as any).Razorpay(options)
+      rzp.open()
+    } catch (e: any) {
+      toast({ title: 'Payment error', description: e.message || 'Something went wrong', variant: 'destructive' })
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
+      {/* Decorative background */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#94a3b81a_1px,transparent_1px),linear-gradient(to_bottom,#94a3b81a_1px,transparent_1px)] bg-[size:16px_24px]" />
+        <div className="absolute -top-24 -left-24 w-[380px] h-[380px] bg-primary/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-24 -right-24 w-[380px] h-[380px] bg-accent/10 rounded-full blur-3xl" />
+      </div>
       <Header />
       
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-12 relative">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-4xl font-bold text-foreground mb-8">Shopping Cart</h1>
           
           {cartItems.length === 0 ? (
-            <Card>
+            <Card className="border-0 shadow-md bg-gradient-to-br from-muted to-background">
               <CardContent className="py-12 text-center">
                 <h3 className="text-xl font-semibold mb-4">Your cart is empty</h3>
                 <p className="text-muted-foreground mb-6">Add some parts to get started</p>
@@ -86,7 +176,7 @@ const Cart = () => {
             <div className="grid lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-4">
                 {cartItems.map((item) => (
-                  <Card key={item.id}>
+                  <Card key={item.id} className="transition-shadow hover:shadow-md">
                     <CardContent className="p-6">
                       <div className="flex items-center gap-4">
                         <img 
@@ -142,7 +232,7 @@ const Cart = () => {
               </div>
 
               <div>
-                <Card>
+                <Card className="border-0 shadow-lg bg-gradient-to-b from-primary/5 to-accent/10">
                   <CardHeader>
                     <CardTitle>Order Summary</CardTitle>
                   </CardHeader>
@@ -164,19 +254,48 @@ const Cart = () => {
                       <span>Total</span>
                       <span>₹{total}</span>
                     </div>
-                    <Button className="w-full" size="lg">
-                      Proceed to Checkout
-                    </Button>
-                    <Button variant="outline" className="w-full">
-                      Continue Shopping
-                    </Button>
+                    <div className="flex flex-col gap-3">
+                      {paymentsEnabled && (
+                        <Button className="w-full bg-gradient-to-r from-primary to-accent text-white hover:opacity-90 md:hidden" size="lg" onClick={handlePayment}>
+                          Pay Now
+                        </Button>
+                      )}
+                      <Button variant="outline" className="w-full" onClick={() => navigate('/services')}>
+                        Continue Shopping
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
+                {/* Desktop: Pay Now button placed below the order summary card */}
+                <div className="hidden md:block mt-4">
+                  {paymentsEnabled && (
+                    <Button className="w-full bg-gradient-to-r from-primary to-accent text-white hover:opacity-90" size="lg" onClick={handlePayment}>
+                      Pay Now
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
           )}
         </div>
       </div>
+
+      {/* Sticky checkout bar on mobile to ensure visibility */}
+      {cartItems.length > 0 && paymentsEnabled && (
+        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t z-50 p-3">
+          <div className="max-w-6xl mx-auto flex items-center justify-between gap-3">
+            <div>
+              <div className="text-xs text-muted-foreground">Total</div>
+              <div className="text-lg font-bold">₹{total}</div>
+            </div>
+            <Button size="lg" className="flex-1 bg-gradient-to-r from-primary to-accent text-white hover:opacity-90" onClick={handlePayment}>
+              Pay Now
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Floating Pay Now button removed; desktop button lives below summary card */}
 
       <Footer />
     </div>

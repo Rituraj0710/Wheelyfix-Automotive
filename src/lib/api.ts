@@ -76,6 +76,18 @@ export const api = {
       };
     }
   },
+  
+  async authGet<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+    const result = await this.get<T>(endpoint, options);
+    if (result.error) throw new Error(result.error);
+    return result.data as T;
+  },
+  
+  async authPost<T>(endpoint: string, data: any, options: RequestInit = {}): Promise<T> {
+    const result = await this.post<T>(endpoint, data, options);
+    if (result.error) throw new Error(result.error);
+    return result.data as T;
+  },
 
   async put<T>(endpoint: string, data: any, options: RequestInit = {}): Promise<ApiResponse<T>> {
     return api.post<T>(endpoint, data, { ...options, method: 'PUT' });

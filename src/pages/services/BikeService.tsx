@@ -1,9 +1,21 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Bike, Clock, Shield, Star, CheckCircle, MapPin, Phone } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 const BikeService = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const handleBookNow = () => {
+    const serviceName = 'Bike Service';
+    if (!user) {
+      localStorage.setItem('redirectAfterLoginPath', '/booking')
+      navigate('/login', { state: { from: '/booking', serviceType: serviceName } });
+      return;
+    }
+    navigate('/booking', { state: { serviceType: serviceName } });
+  };
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Hero Section */}
@@ -162,7 +174,7 @@ const BikeService = () => {
                     <span className="font-semibold text-gray-900">3 months</span>
                   </div>
                 </div>
-                <Button className="w-full mt-6 bg-purple-600 hover:bg-purple-700">
+                <Button className="w-full mt-6 bg-purple-600 hover:bg-purple-700" onClick={handleBookNow}>
                   Book Now
                 </Button>
               </Card>

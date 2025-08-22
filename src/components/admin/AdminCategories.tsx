@@ -34,20 +34,12 @@ const AdminCategories = () => {
 
   const fetchCategories = async () => {
     try {
-      const { data, error } = await supabase
-        .from('product_categories')
-        .select('*')
-        .order('sort_order', { ascending: true });
-
-      if (error) throw error;
-      setCategories(data || []);
+      const raw = localStorage.getItem('product_categories');
+      const data = raw ? (JSON.parse(raw) as ProductCategory[]) : [];
+      setCategories(data.sort((a,b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)));
     } catch (error) {
       console.error('Error fetching categories:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load categories",
-        variant: "destructive",
-      });
+      toast({ title: 'Error', description: 'Failed to load categories', variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -57,75 +49,36 @@ const AdminCategories = () => {
     if (!editingCategory) return;
 
     try {
+      const raw = localStorage.getItem('product_categories');
+      const list: ProductCategory[] = raw ? JSON.parse(raw) : [];
       if (editingCategory.id.startsWith('new-')) {
-        const { error } = await supabase
-          .from('product_categories')
-          .insert([{
-            name: editingCategory.name,
-            icon: editingCategory.icon,
-            description: editingCategory.description,
-            image_url: editingCategory.image_url,
-            is_active: editingCategory.is_active,
-            sort_order: editingCategory.sort_order,
-          }]);
-
-        if (error) throw error;
+        list.push({ ...editingCategory, id: crypto.randomUUID() });
       } else {
-        const { error } = await supabase
-          .from('product_categories')
-          .update({
-            name: editingCategory.name,
-            icon: editingCategory.icon,
-            description: editingCategory.description,
-            image_url: editingCategory.image_url,
-            is_active: editingCategory.is_active,
-            sort_order: editingCategory.sort_order,
-          })
-          .eq('id', editingCategory.id);
-
-        if (error) throw error;
+        const idx = list.findIndex(c => c.id === editingCategory.id);
+        if (idx !== -1) list[idx] = { ...editingCategory };
       }
-
-      toast({
-        title: "Success",
-        description: "Category saved successfully",
-      });
-
+      localStorage.setItem('product_categories', JSON.stringify(list));
+      toast({ title: 'Success', description: 'Category saved successfully' });
       setIsDialogOpen(false);
       setEditingCategory(null);
       fetchCategories();
     } catch (error) {
       console.error('Error saving category:', error);
-      toast({
-        title: "Error",
-        description: "Failed to save category",
-        variant: "destructive",
-      });
+      toast({ title: 'Error', description: 'Failed to save category', variant: 'destructive' });
     }
   };
 
   const handleDelete = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('product_categories')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "Category deleted successfully",
-      });
-
+      const raw = localStorage.getItem('product_categories');
+      const list: ProductCategory[] = raw ? JSON.parse(raw) : [];
+      const next = list.filter(c => c.id !== id);
+      localStorage.setItem('product_categories', JSON.stringify(next));
+      toast({ title: 'Success', description: 'Category deleted successfully' });
       fetchCategories();
     } catch (error) {
       console.error('Error deleting category:', error);
-      toast({
-        title: "Error",
-        description: "Failed to delete category",
-        variant: "destructive",
-      });
+      toast({ title: 'Error', description: 'Failed to delete category', variant: 'destructive' });
     }
   };
 

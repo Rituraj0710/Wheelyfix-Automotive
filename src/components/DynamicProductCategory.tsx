@@ -356,7 +356,7 @@ const DynamicProductCategory = () => {
       is_active: true,
       sort_order: 1,
       count: 25,
-      color: 'bright-blue',
+      color: 'emerald',
       link: '/services?category=maintenance'
     },
     {
@@ -487,7 +487,7 @@ const DynamicProductCategory = () => {
 
   const getColorClasses = (color: string) => {
     const colorMap: { [key: string]: { bg: string; text: string; hover: string; lightBg: string } } = {
-      'bright-blue': { bg: 'bg-blue-500', text: 'text-blue-500', hover: 'hover:bg-blue-600', lightBg: 'bg-blue-50' },
+      'emerald': { bg: 'bg-green-500', text: 'text-green-500', hover: 'hover:bg-green-600', lightBg: 'bg-green-50' },
       'deep-red': { bg: 'bg-red-600', text: 'text-red-600', hover: 'hover:bg-red-700', lightBg: 'bg-red-50' },
       'orange': { bg: 'bg-orange-500', text: 'text-orange-500', hover: 'hover:bg-orange-600', lightBg: 'bg-orange-50' },
       'crimson': { bg: 'bg-red-700', text: 'text-red-700', hover: 'hover:bg-red-800', lightBg: 'bg-red-50' },
@@ -495,11 +495,10 @@ const DynamicProductCategory = () => {
       'steel-gray': { bg: 'bg-gray-500', text: 'text-gray-500', hover: 'hover:bg-gray-600', lightBg: 'bg-gray-50' },
       'teal': { bg: 'bg-teal-500', text: 'text-teal-500', hover: 'hover:bg-teal-600', lightBg: 'bg-teal-50' },
       'forest-green': { bg: 'bg-green-600', text: 'text-green-600', hover: 'hover:bg-green-700', lightBg: 'bg-green-50' },
-      'navy-blue': { bg: 'bg-blue-700', text: 'text-blue-700', hover: 'hover:bg-blue-800', lightBg: 'bg-blue-50' },
       'purple': { bg: 'bg-purple-600', text: 'text-purple-600', hover: 'hover:bg-purple-700', lightBg: 'bg-purple-50' },
       'magenta': { bg: 'bg-pink-500', text: 'text-pink-500', hover: 'hover:bg-pink-600', lightBg: 'bg-pink-50' },
     };
-    return colorMap[color] || colorMap['bright-blue'];
+    return colorMap[color] || colorMap['emerald'];
   };
 
   return (
@@ -523,7 +522,7 @@ const DynamicProductCategory = () => {
         {/* Categories Grid - Perfect Square Tiles */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6 mb-16">
           {categories.map((category) => {
-            const colorClasses = getColorClasses(category.color || 'bright-blue');
+            const colorClasses = getColorClasses(category.color || 'emerald');
             const CategoryCard = (
               <Card 
                 className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group border-0 overflow-hidden aspect-square"
@@ -580,12 +579,14 @@ const DynamicProductCategory = () => {
 
         {/* Browse More Button */}
         <div className="text-center">
-                <Button 
-            className="bg-orange-500 hover:bg-orange-600 text-white font-bold text-lg px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
-                  size="lg"
-                >
-            Browse More
-                </Button>
+          <Link to="/vehicle-services-parts">
+            <Button 
+              className="bg-orange-500 hover:bg-orange-600 text-white font-bold text-lg px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+              size="lg"
+            >
+              Browse More
+            </Button>
+          </Link>
         </div>
 
         {/* Stats */}

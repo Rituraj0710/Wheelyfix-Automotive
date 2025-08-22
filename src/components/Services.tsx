@@ -112,77 +112,78 @@
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const Services = () => {
   const services = [
     { 
       name: "Suspension", 
-      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop&auto=format",
+      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop&auto=format&q=80",
       alt: "Car suspension system repair"
     },
     { 
       name: "Body Finish", 
-      image: "https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=400&h=300&fit=crop&auto=format",
+      image: "https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=400&h=300&fit=crop&auto=format&q=80",
       alt: "Professional car body painting and finishing"
     },
     { 
       name: "Light Parts", 
-      image: "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=400&h=300&fit=crop&auto=format",
+      image: "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=400&h=300&fit=crop&auto=format&q=80",
       alt: "Car headlight and lighting repair"
     },
     { 
       name: "Tyre Service", 
-      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop&auto=format",
+      image: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=300&fit=crop&auto=format&q=80",
       alt: "Professional tire installation and service"
     },
     { 
       name: "Electrical Services", 
-      image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&h=300&fit=crop&auto=format",
+      image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&h=300&fit=crop&auto=format&q=80",
       alt: "Vehicle electrical system diagnosis and repair"
     },
     { 
       name: "Body Parts", 
-      image: "https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=400&h=300&fit=crop&auto=format",
+      image: "https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=400&h=300&fit=crop&auto=format&q=80",
       alt: "Car body parts replacement and repair"
     },
     { 
       name: "Engines & Carburetor", 
-      image: "https://images.unsplash.com/photo-1487754180451-c456f719a1fc?w=400&h=300&fit=crop&auto=format",
+      image: "https://images.unsplash.com/photo-1487754180451-c456f719a1fc?w=400&h=300&fit=crop&auto=format&q=80",
       alt: "Engine and carburetor repair services"
     },
     { 
       name: "Service & Repair", 
-      image: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=400&h=300&fit=crop&auto=format",
+      image: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=400&h=300&fit=crop&auto=format&q=80",
       alt: "Comprehensive vehicle service and repair"
     },
     { 
       name: "Transmission", 
-      image: "https://images.unsplash.com/photo-1487754180451-c456f719a1fc?w=400&h=300&fit=crop&auto=format",
+      image: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=400&h=300&fit=crop&auto=format&q=80",
       alt: "Transmission repair and maintenance"
     },
     { 
       name: "EV Battery", 
-      image: "https://images.unsplash.com/photo-1593941707882-a5bac6861d75?w=400&h=300&fit=crop&auto=format",
+      image: "https://images.unsplash.com/photo-1593941707882-a5bac6861d75?w=400&h=300&fit=crop&auto=format&q=80",
       alt: "Electric vehicle battery service and replacement"
     },
     { 
       name: "Brake & Wheel", 
-      image: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop&auto=format",
+      image: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=300&fit=crop&auto=format&q=80",
       alt: "Brake system and wheel service"
     },
     { 
       name: "Chassis", 
-      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop&auto=format",
+      image: "https://images.unsplash.com/photo-1487754180451-c456f719a1fc?w=400&h=300&fit=crop&auto=format&q=80",
       alt: "Vehicle chassis inspection and repair"
     },
     { 
       name: "Handle Bar", 
-      image: "https://images.unsplash.com/photo-1571068316344-75bc76f77890?w=400&h=300&fit=crop&auto=format",
+      image: "https://images.unsplash.com/photo-1571068316344-75bc76f77890?w=400&h=300&fit=crop&auto=format&q=80",
       alt: "Motorcycle handlebar adjustment and repair"
     },
     { 
       name: "Motor", 
-      image: "https://images.unsplash.com/photo-1487754180451-c456f719a1fc?w=400&h=300&fit=crop&auto=format",
+      image: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=400&h=300&fit=crop&auto=format&q=80",
       alt: "Motor repair and maintenance services"
     }
   ];
@@ -231,6 +232,20 @@ const Services = () => {
               </h3>
             </Card>
           ))}
+        </div>
+
+        {/* Browse More Button */}
+        <div className="text-center mt-12">
+          <Link to="/vehicle-services-parts">
+            <Button 
+              variant="outline" 
+              className="px-8 py-4 text-lg font-medium border-2 border-accent text-accent
+                       hover:bg-accent hover:text-white transition-all duration-300
+                       rounded-xl shadow-sm hover:shadow-md"
+            >
+              Browse More
+            </Button>
+          </Link>
         </div>
 
       </div>
