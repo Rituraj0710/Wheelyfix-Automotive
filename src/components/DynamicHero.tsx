@@ -394,14 +394,18 @@ const DynamicHero = () => {
           api.get<any>("/cms/hero.description"),
           api.get<any>("/cms/hero.background_image_url"),
           api.get<any>("/cms/hero.cta_text"),
-        ]).then((arr) => arr.map((r) => (r && (r as any).data !== undefined ? (r as any).data : r)));
+        ]).then((arr) => arr.map((r) => {
+          // Handle null responses and extract data properly
+          if (r === null || r === undefined) return null;
+          return (r as any)?.data !== undefined ? (r as any).data : r;
+        }));
 
         const content: HeroContent = {
-          title: (t as any) || "India's Leading",
-          subtitle: (st as any) || "Auto Service Network",
-          description: (d as any) || "Professional Car & Bike Services at your doorstep",
-          background_image_url: (bg as any) || "/hero-banner.jpg",
-          cta_text: (cta as any) || "GET FREE QUOTE",
+          title: (t && typeof t === 'string') ? t : "India's Leading",
+          subtitle: (st && typeof st === 'string') ? st : "Auto Service Network",
+          description: (d && typeof d === 'string') ? d : "Professional Car & Bike Services at your doorstep",
+          background_image_url: (bg && typeof bg === 'string') ? bg : "/hero-banner.jpg",
+          cta_text: (cta && typeof cta === 'string') ? cta : "GET FREE QUOTE",
         };
         setHeroContent(content);
 
@@ -410,11 +414,20 @@ const DynamicHero = () => {
           api.get<BrandApi[]>("/brands?type=car"),
           api.get<BrandApi[]>("/brands?type=bike"),
         ]);
-        const cars = (carsRes as any)?.data ?? carsRes;
-        const bikes = (bikesRes as any)?.data ?? bikesRes;
+        
+        // Handle brand responses safely
+        const cars = (carsRes && typeof carsRes === 'object' && (carsRes as any)?.data !== undefined) 
+          ? (carsRes as any).data 
+          : (Array.isArray(carsRes) ? carsRes : []);
+          
+        const bikes = (bikesRes && typeof bikesRes === 'object' && (bikesRes as any)?.data !== undefined) 
+          ? (bikesRes as any).data 
+          : (Array.isArray(bikesRes) ? bikesRes : []);
+          
         if (Array.isArray(cars)) setBrandsCar(cars);
         if (Array.isArray(bikes)) setBrandsBike(bikes);
       } catch (e) {
+        console.error('Error loading data:', e);
         // Fallback to defaults from local vehicleData; heroContent already has defaults
       } finally {
         setLoading(false);

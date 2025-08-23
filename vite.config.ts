@@ -28,6 +28,24 @@ export default defineConfig(({ mode }) => ({
           });
         },
       },
+      '/admin': {
+        target: 'http://localhost:8090',
+        changeOrigin: true,
+        secure: false,
+        ws: true,
+        rewrite: (path) => path.replace(/^\/admin/, ''),
+        configure: (proxy, _options) => {
+          proxy.on('error', (err, _req, _res) => {
+            console.log('Admin proxy error', err);
+          });
+          proxy.on('proxyReq', (proxyReq, req, _res) => {
+            console.log('Admin Request:', req.method, req.url);
+          });
+          proxy.on('proxyRes', (proxyRes, req, _res) => {
+            console.log('Admin Response:', proxyRes.statusCode, req.url);
+          });
+        },
+      },
     },
   },
   plugins: [
