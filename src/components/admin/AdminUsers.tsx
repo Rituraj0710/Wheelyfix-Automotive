@@ -9,12 +9,11 @@ import { Shield, ShieldCheck, User } from 'lucide-react';
 import { api } from '@/lib/api';
 
 interface UserProfile {
-  id: string;
-  user_id: string;
+  _id: string;
+  name: string;
   email: string;
-  full_name: string;
-  role: 'admin' | 'user';
-  created_at: string;
+  isAdmin: boolean;
+  createdAt: string;
 }
 
 const AdminUsers = () => {
@@ -72,12 +71,12 @@ const AdminUsers = () => {
           </Card>
         ) : (
           users.map((user) => (
-            <Card key={user.id}>
+            <Card key={user._id}>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
                     <div className="flex-shrink-0">
-                      {user.role === 'admin' ? (
+                      {user.isAdmin ? (
                         <ShieldCheck className="h-10 w-10 text-primary" />
                       ) : (
                         <User className="h-10 w-10 text-muted-foreground" />
@@ -85,31 +84,31 @@ const AdminUsers = () => {
                     </div>
                     <div className="space-y-1">
                       <h3 className="font-semibold">
-                        {user.full_name || 'Unnamed User'}
+                        {user.name || 'Unnamed User'}
                       </h3>
                       <p className="text-sm text-muted-foreground">{user.email}</p>
                       <div className="flex items-center space-x-2">
                         <Badge 
-                          variant={user.role === 'admin' ? "default" : "secondary"}
+                          variant={user.isAdmin ? "default" : "secondary"}
                           className="flex items-center gap-1"
                         >
-                          {user.role === 'admin' ? (
+                          {user.isAdmin ? (
                             <Shield className="h-3 w-3" />
                           ) : (
                             <User className="h-3 w-3" />
                           )}
-                          {user.role}
+                          {user.isAdmin ? 'admin' : 'user'}
                         </Badge>
                         <span className="text-xs text-muted-foreground">
-                          Joined {new Date(user.created_at).toLocaleDateString()}
+                          Joined {new Date(user.createdAt).toLocaleDateString()}
                         </span>
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Select
-                      value={user.role}
-                      onValueChange={(value: 'admin' | 'user') => updateUserRole(user.id, value)}
+                      value={user.isAdmin ? 'admin' : 'user'}
+                      onValueChange={(value: 'admin' | 'user') => updateUserRole(user._id, value)}
                     >
                       <SelectTrigger className="w-32">
                         <SelectValue />
@@ -135,13 +134,13 @@ const AdminUsers = () => {
           <div className="grid grid-cols-2 gap-4">
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">
-                {users.filter(u => u.role === 'admin').length}
+                {users.filter(u => u.isAdmin).length}
               </div>
               <p className="text-sm text-muted-foreground">Administrators</p>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold">
-                {users.filter(u => u.role === 'user').length}
+                {users.filter(u => !u.isAdmin).length}
               </div>
               <p className="text-sm text-muted-foreground">Regular Users</p>
             </div>

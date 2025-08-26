@@ -19,8 +19,8 @@ interface Service {
   description: string;
   icon: string;
   price: number;
-  duration_minutes: number; // UI field name
-  is_active: boolean; // UI field name
+  durationMinutes: number; // backend field name
+  isActive: boolean; // backend field name
   category: string;
 }
 
@@ -59,8 +59,8 @@ const AdminServices = () => {
           description: editingService.description,
           icon: editingService.icon,
           price: editingService.price,
-          durationMinutes: editingService.duration_minutes,
-          isActive: editingService.is_active,
+          durationMinutes: (editingService as any).duration_minutes ?? editingService.durationMinutes,
+          isActive: (editingService as any).is_active ?? editingService.isActive,
           category: editingService.category,
         });
       } else {
@@ -69,8 +69,8 @@ const AdminServices = () => {
           description: editingService.description,
           icon: editingService.icon,
           price: editingService.price,
-          durationMinutes: editingService.duration_minutes,
-          isActive: editingService.is_active,
+          durationMinutes: (editingService as any).duration_minutes ?? editingService.durationMinutes,
+          isActive: (editingService as any).is_active ?? editingService.isActive,
           category: editingService.category,
         });
       }
@@ -102,8 +102,8 @@ const AdminServices = () => {
       description: '',
       icon: '🔧',
       price: 0,
-      duration_minutes: 60,
-      is_active: true,
+      durationMinutes: 60,
+      isActive: true,
       category: 'General',
     });
     setIsDialogOpen(true);
@@ -132,7 +132,7 @@ const AdminServices = () => {
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle>
-                {editingService?.id.startsWith('new-') ? 'Create Service' : 'Edit Service'}
+                {editingService?.id?.startsWith('new-') ? 'Create Service' : 'Edit Service'}
               </DialogTitle>
             </DialogHeader>
             {editingService && (
@@ -184,15 +184,15 @@ const AdminServices = () => {
                     <Input
                       id="duration"
                       type="number"
-                      value={editingService.duration_minutes}
-                      onChange={(e) => setEditingService({ ...editingService, duration_minutes: parseInt(e.target.value) || 0 })}
+                      value={(editingService as any).duration_minutes ?? editingService.durationMinutes}
+                      onChange={(e) => setEditingService({ ...editingService, durationMinutes: parseInt(e.target.value) || 0 })}
                     />
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Switch
-                    checked={editingService.is_active}
-                    onCheckedChange={(checked) => setEditingService({ ...editingService, is_active: checked })}
+                    checked={(editingService as any).is_active ?? editingService.isActive}
+                    onCheckedChange={(checked) => setEditingService({ ...editingService, isActive: checked })}
                   />
                   <Label>Active</Label>
                 </div>
@@ -208,7 +208,7 @@ const AdminServices = () => {
 
       <div className="grid gap-4">
         {services.map((service) => (
-          <Card key={service.id}>
+          <Card key={(service as any)._id || service.id}>
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
@@ -221,8 +221,8 @@ const AdminServices = () => {
                       {service.price > 0 && (
                         <Badge variant="secondary">${service.price}</Badge>
                       )}
-                      <Badge variant={service.is_active ? "default" : "destructive"}>
-                        {service.is_active ? "Active" : "Inactive"}
+                      <Badge variant={(service as any).is_active ?? service.isActive ? "default" : "destructive"}>
+                        {((service as any).is_active ?? service.isActive) ? "Active" : "Inactive"}
                       </Badge>
                     </div>
                   </div>
@@ -231,7 +231,7 @@ const AdminServices = () => {
                   <Button variant="outline" size="sm" onClick={() => openEditDialog(service)}>
                     <Edit className="h-4 w-4" />
                   </Button>
-                  <Button variant="destructive" size="sm" onClick={() => handleDelete((service as any)._id || service.id!)}>
+                  <Button variant="destructive" size="sm" onClick={() => handleDelete(((service as any)._id || service.id!) as string)}>
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>

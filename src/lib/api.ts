@@ -1,5 +1,5 @@
-// Make sure the API base URL matches the proxy configuration in vite.config.ts
-const API_BASE_URL = '/api';
+// Resolve API base URL from environment for production; fall back to dev proxy '/api'
+const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || '/api';
 
 export interface ApiResponse<T> {
   data?: T;
