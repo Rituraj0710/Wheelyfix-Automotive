@@ -1,33 +1,47 @@
-import { useState, useEffect } from 'react';
-import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Calendar, Thermometer, Battery, Circle, SprayCan, Car, Sparkles, ClipboardList, Shield, Wrench, Droplets, Sun, CheckCircle, Star, Zap, Gauge, MapPin, Clock, Settings } from "lucide-react";
+import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Shield, Star, MapPin, Clock } from "lucide-react";
 
-import { Link } from 'react-router-dom';
-
-import appMockup from '@/assets/app-mockup.png';
-import logoImg from '@/assets/logo.jpg';
-// All Pikpart references removed. Use only icons, appMockup, and logoImg for images. No Pikpart name or icon used anywhere.
-
-interface Service {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  category: string;
-  is_active: boolean;
-  price?: string;
-  duration?: string;
-  color?: string;
-  link?: string;
-}
+// Service interface retained for reference if backend data is re-enabled
 
 const DynamicServices = () => {
-  const [services, setServices] = useState<Service[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("All");
   const [vehicleTab, setVehicleTab] = useState<'Two Wheeler' | 'Four Wheeler'>('Two Wheeler');
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const toSlug = (value: string) =>
+    value
+      .toLowerCase()
+      .replace(/&/g, 'and')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '');
+
+  const trackServiceClick = (service: { name: string; id?: string }) => {
+    const payload = { service_id: service.id ?? toSlug(service.name), service_name: service.name };
+    try {
+      // Push to dataLayer if present (e.g., GTM), otherwise fallback to console
+      // @ts-ignore
+      if (typeof window !== 'undefined' && window.dataLayer && Array.isArray(window.dataLayer)) {
+        // @ts-ignore
+        window.dataLayer.push({ event: 'service_click', ...payload });
+      } else {
+        // eslint-disable-next-line no-console
+        console.debug('analytics:event service_click', payload);
+      }
+    } catch {
+      // eslint-disable-next-line no-console
+      console.debug('analytics:event service_click failed');
+    }
+  };
+
+  const handleOpenService = (service: { name: string; id?: string }) => {
+    const slug = toSlug(service.name || service.id || 'service');
+    const target = `/services/${slug}${location.search || ''}`;
+    trackServiceClick(service);
+    navigate(target, { replace: false });
+    // Ensure we land at top of the page
+    setTimeout(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior }), 0);
+  };
 
   // Updated service data with better HD automotive images - each service has a unique image
   const twoWheelerServices = [
@@ -136,151 +150,7 @@ const DynamicServices = () => {
     },
   ];
 
-  useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        const raw = localStorage.getItem('services');
-        const data = raw ? JSON.parse(raw) : [];
-        setServices(data);
-      } catch (error) {
-        console.error('Error fetching services:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchServices();
-  }, []);
-
-  // Default services based on Wheelyfix website with diverse colors and links
-  const defaultServices: Service[] = [
-    {
-      id: '1',
-      name: 'General Service',
-      description: 'Complete vehicle maintenance and inspection',
-      icon: 'wrench',
-      category: 'Car',
-      is_active: true,
-      price: '₹999',
-      duration: '2-3 hours',
-      color: 'orange',
-      link: '/services/general-service'
-    },
-    {
-      id: '2',
-      name: 'Oil Change Service',
-      description: 'Engine oil and filter replacement',
-      icon: 'oil',
-      category: 'Car',
-      is_active: true,
-      price: '₹599',
-      duration: '1 hour',
-      color: 'green',
-      link: '/services/oil-change'
-    },
-    {
-      id: '3',
-      name: 'Brake Service',
-      description: 'Brake pad replacement and adjustment',
-      icon: 'shield',
-      category: 'Car',
-      is_active: true,
-      price: '₹799',
-      duration: '2 hours',
-      color: 'red',
-      link: '/services/brake-service'
-    },
-    {
-      id: '4',
-      name: 'AC Service',
-      description: 'Air conditioning system maintenance',
-      icon: 'sparkles',
-      category: 'Car',
-      is_active: true,
-      price: '₹1299',
-      duration: '3-4 hours',
-      color: 'cyan',
-      link: '/services/ac-service'
-    },
-    {
-      id: '5',
-      name: 'Battery Service',
-      description: 'Battery testing and replacement',
-      icon: 'zap',
-      category: 'Car',
-      is_active: true,
-      price: '₹399',
-      duration: '30 mins',
-      color: 'yellow',
-      link: '/services/battery-service'
-    },
-    {
-      id: '6',
-      name: 'Bike Service',
-      description: 'Complete bike maintenance service',
-      icon: 'bike',
-      category: 'Bike',
-      is_active: true,
-      price: '₹499',
-      duration: '1-2 hours',
-      color: 'purple',
-      link: '/services/bike-service'
-    },
-    {
-      id: '7',
-      name: 'Wheel Alignment',
-      description: 'Professional wheel alignment service',
-      icon: 'gauge',
-      category: 'Car',
-      is_active: true,
-      price: '₹299',
-      duration: '1 hour',
-      color: 'blue',
-      link: '/services/wheel-alignment'
-    },
-    {
-      id: '8',
-      name: 'Car Wash',
-      description: 'Professional car washing and detailing',
-      icon: 'sparkles',
-      category: 'Car',
-      is_active: true,
-      price: '₹199',
-      duration: '45 mins',
-      color: 'indigo',
-      link: '/services/car-wash'
-    }
-  ];
-
-  const displayServices = services.length > 0 ? services : defaultServices;
-
-  if (loading) {
-    return (
-      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
-        <div className="container mx-auto px-4 text-center">
-          <div className="animate-pulse text-lg">Loading services...</div>
-        </div>
-      </section>
-    );
-  }
-
-  const categories = ['All', 'Car', 'Bike'];
-
-  const getServiceIcon = (iconName: string) => {
-    const iconMap: { [key: string]: React.ReactNode } = {
-      'wrench': <Wrench className="h-8 w-8" />,
-      'car': <Car className="h-8 w-8" />,
-      'bike': <Bike className="h-8 w-8" />,
-      'settings': <Settings className="h-8 w-8" />,
-      'oil': <Droplets className="h-8 w-8" />,
-      'sparkles': <Sparkles className="h-8 w-8" />,
-      'shield': <Shield className="h-8 w-8" />,
-      'clock': <Clock className="h-8 w-8" />,
-      'zap': <Zap className="h-8 w-8" />,
-      'gauge': <Gauge className="h-8 w-8" />,
-    };
-    return iconMap[iconName.toLowerCase()] || <Wrench className="h-8 w-8" />;
-  };
+  // Static content rendering; no async loading required
 
   const getColorClasses = (color: string) => {
     const colorMap: { [key: string]: { bg: string; border: string; hover: string } } = {
@@ -331,7 +201,20 @@ const DynamicServices = () => {
             {(vehicleTab === 'Two Wheeler' ? twoWheelerServices : fourWheelerServices).map((service, idx) => {
               const colorClasses = getColorClasses(service.color);
               return (
-                <div key={idx} className={`flex flex-col items-center bg-white rounded-xl border-2 ${colorClasses.border} p-6 min-w-[180px] max-w-[200px] mx-2 shadow-lg hover:shadow-xl transition-all duration-300 ${colorClasses.hover} hover:-translate-y-1`}>
+                <div
+                  key={idx}
+                  role="link"
+                  tabIndex={0}
+                  aria-label={`View ${service.name}`}
+                  onClick={() => handleOpenService(service)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleOpenService(service);
+                    }
+                  }}
+                  className={`cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-500 flex flex-col items-center bg-white rounded-xl border-2 ${colorClasses.border} p-6 min-w-[180px] max-w-[200px] mx-2 shadow-lg hover:shadow-xl transition-all duration-300 ${colorClasses.hover} hover:-translate-y-1`}
+                >
                   <div className={`w-20 h-20 flex items-center justify-center mb-4 ${colorClasses.bg} rounded-xl overflow-hidden`}>
                     <img 
                       src={service.image} 

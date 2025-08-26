@@ -29,6 +29,7 @@ import BatteryService from './pages/services/BatteryService';
 import BikeService from './pages/services/BikeService';
 import WheelAlignmentService from './pages/services/WheelAlignmentService';
 import CarWashService from './pages/services/CarWashService';
+import ServiceDetail from './pages/services/ServiceDetail';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -63,6 +64,7 @@ function App() {
             <Route path="/services/bike-service" element={<BikeService />} />
             <Route path="/services/wheel-alignment" element={<WheelAlignmentService />} />
             <Route path="/services/car-wash" element={<CarWashService />} />
+            <Route path="/services/:slug" element={<ServiceDetail />} />
             
             <Route path="*" element={<NotFound />} />
           </Routes>

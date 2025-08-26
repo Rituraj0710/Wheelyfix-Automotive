@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Car, Bike, Clock, Shield, Zap, Users } from "lucide-react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useNavigate, useLocation } from "react-router-dom"
 import { useAuth } from "@/hooks/useAuth"
 
 const Services = () => {
@@ -59,6 +59,9 @@ const Services = () => {
   ]
 
   const navigate = useNavigate()
+  const location = useLocation()
+  const qs = new URLSearchParams(location.search)
+  const selectedType = qs.get('type') // 'car' | 'bike'
   const { user } = useAuth()
 
   const handleBookNow = (serviceName: string) => {
@@ -111,7 +114,9 @@ const Services = () => {
           </div>
 
           <div className="space-y-16">
-            {services.map((category) => (
+            {services
+              .filter(category => !selectedType || (selectedType === 'car' ? category.category.includes('Car') : category.category.includes('Bike')))
+              .map((category) => (
               <div key={category.category}>
                 <div className="text-center mb-12">
                   <div className="inline-flex items-center space-x-3 bg-white px-6 py-3 rounded-full shadow-sm mb-4">

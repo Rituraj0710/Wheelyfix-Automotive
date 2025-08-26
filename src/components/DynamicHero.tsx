@@ -328,6 +328,7 @@ import {
   X,
 } from "lucide-react";
 import { vehicleData } from "@/data/vehicle-data";
+import { useNavigate } from 'react-router-dom';
 import { api } from "@/lib/api";
 
 // SelectionStep internalized in state type
@@ -377,6 +378,7 @@ const DynamicHero = () => {
   const [selectedBrand, setSelectedBrand] = useState(''); // brand slug
   const [selectedModel, setSelectedModel] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
 
   // Admin-controlled data from backend
   interface BrandModel { name: string; fuels?: FuelType[] }
@@ -441,7 +443,13 @@ const DynamicHero = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", { selectedVehicle, mobileNumber });
+    // Always navigate to main services page; include selections if any
+    const params = new URLSearchParams();
+    if (selectedVehicleType) params.set('type', selectedVehicleType);
+    if (selectedBrand) params.set('brand', selectedBrand);
+    if (selectedModel) params.set('model', selectedModel);
+    const qs = params.toString();
+    navigate(qs ? `/services?${qs}` : '/services');
   };
 
   type SelectionStep = 'vehicle-type' | 'fuel-type' | 'brand' | 'model';
